@@ -1,9 +1,9 @@
-import '../styles/globals.css'
-import type { Metadata } from 'next';
+import React from 'react';
+import '@/styles/globals.css';
 
-export const metadata: Metadata = {
-  title: 'Monity - Aplikacja do zarządzania budżetem',
-  description: 'Monitoruj swoje wydatki, twórz budżety i osiągaj cele finansowe.',
+export const metadata = {
+  title: 'Monity - Aplikacja Budżetowa',
+  description: 'Aplikacja do zarządzania budżetem',
 };
 
 export default function RootLayout({
@@ -14,7 +14,19 @@ export default function RootLayout({
   return (
     <html lang="pl">
       <body>
-        {children}
+        <div className="min-h-screen flex flex-col">
+          <header className="p-4 bg-blue-500 text-white">
+            <h1 className="text-xl font-bold">Monity</h1>
+          </header>
+
+          <main className="flex-grow p-4">
+            {children}
+          </main>
+
+          <footer className="p-4 bg-gray-100 text-center">
+            <p>© 2025 Monity - Aplikacja Budżetowa</p>
+          </footer>
+        </div>
       </body>
     </html>
   );
