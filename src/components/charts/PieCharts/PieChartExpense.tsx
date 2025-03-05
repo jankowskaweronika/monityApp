@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { COLORS } from '@/data/expenseData';
-import { PieChartExpenseProps } from '@/types/type';
+import { COLORS } from '../../../data/expenseData';
+import { PieChartExpenseProps } from '../../../types/type';
 
 const PieChartExpense: React.FC<PieChartExpenseProps> = ({ data }) => {
   return (

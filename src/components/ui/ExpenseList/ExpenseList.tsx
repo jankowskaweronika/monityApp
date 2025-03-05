@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExpenseListProps } from '@/types/type';
+import { ExpenseListProps } from '../../../types/type';
 
 export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses }) => {
   if (!expenses || expenses.length === 0) {

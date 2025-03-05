@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react';
-import { DashboardLayoutProps } from '@/types/type';
+import { DashboardLayoutProps } from '../../types/type';
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   return (

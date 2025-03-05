@@ -1,10 +1,10 @@
 'use client'
 
 import React from 'react';
-import { PieChartExpense } from '@/components/charts/PieCharts';
-import { ExpenseList } from '@/components/ui/ExpenseList';
-import { expenses } from '@/data/expenses';
-import { expenseData } from '@/data/expenseData';
+import { PieChartExpense } from '../../components/charts/PieCharts';
+import { ExpenseList } from '../../components/ui/ExpenseList';
+import { expenses } from '../../data/expenses';
+import { expenseData } from '../../data/expenseData';
 
 export default function DashboardPage() {
   const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);

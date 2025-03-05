@@ -1,2 +1,2 @@
 export { ExpenseList } from './ExpenseList';
-export type { ExpenseListProps } from '../../../types/type';
+export type { ExpenseListProps } from '@/types/type';

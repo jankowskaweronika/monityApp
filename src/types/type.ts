@@ -29,3 +29,7 @@ export type ExpenseDataItem = {
 export type PieChartExpenseProps = {
   data: ExpenseDataItem[];
 }
+
+export type NavigationProps = {
+  wera: string
+}
