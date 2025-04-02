@@ -1,0 +1,9 @@
+.next
+node_modules
+out
+public
+build
+dist
+.vscode
+.git
+pnpm-lock.yaml

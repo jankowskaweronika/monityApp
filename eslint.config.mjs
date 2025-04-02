@@ -10,7 +10,20 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...compat.extends("next/core-web-vitals", "next/typescript", "prettier"),
+
+  {
+    rules: {
+      "semi": ["error", "always"],
+      "quotes": ["error", "double"],
+      "space-before-blocks": ["error", "always"],
+      "keyword-spacing": ["error", { "before": true, "after": true }],
+      "no-trailing-spaces": "error",
+      "space-infix-ops": "error",
+      "object-curly-spacing": ["error", "always"],
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+    },
+  },
 ];
 
 export default eslintConfig;

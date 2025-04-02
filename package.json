@@ -1,27 +1,57 @@
 {
-  "name": "monityapp",
+  "name": "monityApp",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'",
+    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}'"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.6.0",
+    "next": "15.2.0",
+    "postcss": "^8.5.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.2.0"
+    "react-redux": "^9.2.0",
+    "recharts": "^2.15.1",
+    "redux": "^5.0.1"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@chromatic-com/storybook": "^3.2.5",
+    "@eslint/eslintrc": "^3",
+    "@storybook/addon-essentials": "^8.6.3",
+    "@storybook/addon-interactions": "^8.6.3",
+    "@storybook/addon-onboarding": "^8.6.3",
+    "@storybook/blocks": "^8.6.3",
+    "@storybook/nextjs": "^8.6.3",
+    "@storybook/react": "^8.6.3",
+    "@storybook/test": "^8.6.3",
+    "@tailwindcss/postcss": "^4.1.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
+    "@typescript-eslint/eslint-plugin": "^8.29.0",
+    "@typescript-eslint/parser": "^8.29.0",
     "eslint": "^9",
     "eslint-config-next": "15.2.0",
-    "@eslint/eslintrc": "^3"
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-prettier": "^5.2.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-storybook": "^0.11.3",
+    "prettier": "^3.5.3",
+    "storybook": "^8.6.3",
+    "tailwindcss": "^4.1.1",
+    "typescript": "^5"
+  },
+  "eslintConfig": {
+    "extends": [
+      "plugin:storybook/recommended"
+    ]
   }
 }

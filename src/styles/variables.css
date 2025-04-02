@@ -1,0 +1,68 @@
+ :root {
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+
+  --z-negative: -1;
+  --z-elevate: 1;
+  --z-sticky: 100;
+  --z-drawer: 200;
+  --z-dropdown: 300;
+  --z-modal: 400;
+  --z-popover: 500;
+  --z-tooltip: 600;
+  --z-toast: 700;
+  --z-max: 9999;
+
+  --chart-height-sm: 200px;
+  --chart-height-md: 300px;
+  --chart-height-lg: 400px;
+  --chart-height-xl: 500px;
+  
+  --max-width-xs: 20rem;   /* 320px */
+  --max-width-sm: 24rem;   /* 384px */
+  --max-width-md: 28rem;   /* 448px */
+  --max-width-lg: 32rem;   /* 512px */
+  --max-width-xl: 36rem;   /* 576px */
+  --max-width-2xl: 42rem;  /* 672px */
+  --max-width-3xl: 48rem;  /* 768px */
+  --max-width-4xl: 56rem;  /* 896px */
+  --max-width-5xl: 64rem;  /* 1024px */
+  --max-width-6xl: 72rem;  /* 1152px */
+  --max-width-7xl: 80rem;  /* 1280px */
+  
+  --grid-gap-small: 0.5rem;
+  --grid-gap-medium: 1rem;
+  --grid-gap-large: 1.5rem;
+  
+  --header-height: 64px;
+  --footer-height: 40px;
+  --sidebar-width: 280px;
+  --sidebar-width-collapsed: 80px;
+  
+  --animation-duration-fast: 150ms;
+  --animation-duration-normal: 300ms;
+  --animation-duration-slow: 500ms;
+  --animation-timing-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --animation-timing-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+
+.dark {
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+}
