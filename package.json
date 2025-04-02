@@ -44,6 +44,10 @@
     "eslint-plugin-prettier": "^5.2.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-storybook": "^0.11.3",
+<<<<<<< HEAD
+=======
+    "husky": "^9.1.7",
+>>>>>>> Kompleksowa implementacja aplikacji budżetowej
     "prettier": "^3.5.3",
     "storybook": "^8.6.3",
     "tailwindcss": "^4.1.1",
