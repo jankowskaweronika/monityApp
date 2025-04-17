@@ -1,54 +1,117 @@
-# React + TypeScript + Vite
+# MonityApp
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A mobile and responsive expense management application that allows users to easily track, categorize, and analyze their finances.
 
-Currently, two official plugins are available:
+## Table of Contents
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [Overview](#overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Available Scripts](#available-scripts)
+- [Project Scope](#project-scope)
+- [Project Status](#project-status)
+- [License](#license)
 
-## Expanding the ESLint configuration
+## Overview
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+MonityApp is designed to help users systematically track expenses, categorize and analyze financial habits, and visually interpret their spending patterns through an intuitive interface.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## Features
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **User Authentication** - Full login and registration functionality
+- **Expense Management** - Add, edit, and delete expenses
+- **Category Management** - Create and manage custom expense categories
+- **Data Visualization** - Interactive pie charts for financial analysis
+- **Responsive Design** - Works on mobile and desktop devices
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Tech Stack
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+### Frontend
+
+- **Language**: TypeScript
+- **Framework**: React 18+
+- **State Management**: Redux
+- **Routing**: React Router
+- **Styling**: Tailwind CSS
+- **Data Visualization**: Recharts
+
+### Backend & Infrastructure
+
+- **Authentication**: Supabase
+- **Database**: Supabase
+
+### Development Tools
+
+- **Build Tool**: Vite
+- **Linting**: ESLint
+- **Code Formatting**: Prettier
+
+### Testing
+
+- **Unit Tests**: Jest
+- **Component Tests**: React Testing Library
+- **E2E Tests**: Cypress
+
+### CI/CD
+
+- **Workflow Automation**: GitHub Actions
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (latest LTS version recommended)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
+
+   git clone https://github.com/your-username/monityapp.git
+   cd monityapp
+
+2. Install dependencies
+
+npm install
+
+# or
+
+yarn install
+
+3. Start the development server
+   npm run dev
+
+# or
+
+yarn dev
+
+Available Scripts
+
+npm run dev - Start the development server
+npm run build - Build the application for production
+npm run lint - Run ESLint to check code quality
+npm run preview - Preview the production build locally
+
+Project Scope
+
+MVP Features (Current)
+Full user authentication
+Basic expense management
+Category management
+Financial data visualization
+Responsive interface
+Core testing coverage
+
+Future Features
+Export data to PDF/Excel
+Advanced expense analysis
+Notifications and alerts
+Dark/light mode toggle
+Budget planning tools
+
+Project Status
+The project is currently in active development. The MVP is being implemented with a focus on core functionality and user experience.
+
+License
+MIT
