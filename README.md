@@ -1,29 +1,26 @@
 # MonityApp
 
-A mobile and responsive expense management application that allows users to easily track, categorize, and analyze their finances.
-
 ## Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
+- [Project Description](#project-description)
 - [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
+- [Getting Started Locally](#getting-started-locally)
 - [Available Scripts](#available-scripts)
 - [Project Scope](#project-scope)
 - [Project Status](#project-status)
 - [License](#license)
 
-## Overview
+## Project Description
 
 MonityApp is designed to help users systematically track expenses, categorize and analyze financial habits, and visually interpret their spending patterns through an intuitive interface.
 
-## Features
+### Key Features
 
-- **User Authentication** - Full login and registration functionality
-- **Expense Management** - Add, edit, and delete expenses
-- **Category Management** - Create and manage custom expense categories
-- **Data Visualization** - Interactive pie charts for financial analysis
-- **Responsive Design** - Works on mobile and desktop devices
+- Subscription tracking and management
+- Payment monitoring and history
+- Smart notifications for renewals and payments
+- Subscription analytics and insights
+- User-friendly interface for subscription management
 
 ## Tech Stack
 
@@ -43,9 +40,10 @@ MonityApp is designed to help users systematically track expenses, categorize an
 
 ### Development Tools
 
-- **Build Tool**: Vite
-- **Linting**: ESLint
-- **Code Formatting**: Prettier
+- Jest for testing
+- ESLint for code linting
+- Prettier for code formatting
+- Git for version control
 
 ### Testing
 
@@ -66,52 +64,80 @@ MonityApp is designed to help users systematically track expenses, categorize an
 
 ### Installation
 
-1. Clone the repository
+1. Clone the repository:
 
-   git clone https://github.com/your-username/monityapp.git
-   cd monityapp
+```bash
+git clone https://github.com/yourusername/monityApp.git
+cd monityApp
+```
 
 2. Install dependencies
 
+```bash
 npm install
-
 # or
-
 yarn install
+```
 
-3. Start the development server
-   npm run dev
+3. Set up environment variables:
 
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with your configuration values.
+
+4. Start the development server:
+
+```bash
+npm start
 # or
+yarn start
+```
 
-yarn dev
+## Available Scripts
 
-Available Scripts
+- `npm start` - Starts the Expo development server
+- `npm test` - Runs the test suite
+- `npm run lint` - Runs ESLint to check code quality
+- `npm run build` - Builds the app for production
+- `npm run eject` - Ejects from Expo (one-way operation)
 
-npm run dev - Start the development server
-npm run build - Build the application for production
-npm run lint - Run ESLint to check code quality
-npm run preview - Preview the production build locally
+## Project Scope
 
-Project Scope
+### MVP Features
 
-MVP Features (Current)
-Full user authentication
-Basic expense management
-Category management
-Financial data visualization
-Responsive interface
-Core testing coverage
+- User authentication and profile management
+- Subscription tracking and management
+- Payment monitoring and history
+- Basic notification system
+- Subscription analytics dashboard
 
-Future Features
-Export data to PDF/Excel
-Advanced expense analysis
-Notifications and alerts
-Dark/light mode toggle
-Budget planning tools
+### Future Development
 
-Project Status
-The project is currently in active development. The MVP is being implemented with a focus on core functionality and user experience.
+- Advanced analytics and reporting
+- Subscription recommendations
+- Budget tracking and management
+- Multi-currency support
+- Export and backup functionality
 
-License
-MIT
+## Project Status
+
+Monity is currently in active development. The project is following an iterative development approach, with regular updates and improvements being made to enhance functionality and user experience.
+
+### Current Status
+
+- Core features are being implemented
+- Basic infrastructure is in place
+- Authentication system is operational
+- Database schema is established
+
+### Known Issues
+
+- Some features are still in development
+- Performance optimizations are ongoing
+- UI/UX improvements are being implemented
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

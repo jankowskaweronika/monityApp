@@ -1,0 +1,93 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# AI Rules for monityApp
+
+A mobile and responsive expense management application that allows users to easily track, categorize, and analyze their finances.
+
+## CODING_PRACTICES
+
+### Guidelines for SUPPORT_LEVEL
+
+#### SUPPORT_BEGINNER
+
+- When running in agent mode, execute up to 3 actions at a time and ask for approval or course correction afterwards.
+- Write code with clear variable names and include explanatory comments for non-obvious logic. Avoid shorthand syntax and complex patterns.
+- Provide full implementations rather than partial snippets. Include import statements, required dependencies, and initialization code.
+- Add defensive coding patterns and clear error handling. Include validation for user inputs and explicit type checking.
+- Suggest simpler solutions first, then offer more optimized versions with explanations of the trade-offs.
+- Briefly explain why certain approaches are used and link to relevant documentation or learning resources.
+- When suggesting fixes for errors, explain the root cause and how the solution addresses it to build understanding. Ask for confirmation before proceeding.
+- Offer introducing basic test cases that demonstrate how the code works and common edge cases to consider.
+
+### Guidelines for DOCUMENTATION
+
+#### STORYBOOK
+
+- Organize stories by component hierarchy to mirror the application structure
+- Implement comprehensive controls to showcase component variations for {{component_types}}
+- Use MDX format to combine documentation and live examples for complex components
+- Configure Storybook addons for accessibility, responsive design, and {{specific_testing_needs}}
+- Implement design token integration to showcase components with different themes
+- Create interaction tests to verify component behavior in addition to visual appearance
+
+### Guidelines for VERSION_CONTROL
+
+#### GITHUB
+
+- Use pull request templates to standardize information provided for code reviews
+- Implement branch protection rules for {{protected_branches}} to enforce quality checks
+- Configure required status checks to prevent merging code that fails tests or linting
+- Use GitHub Actions for CI/CD workflows to automate testing and deployment
+- Implement CODEOWNERS files to automatically assign reviewers based on code paths
+- Use GitHub Projects for tracking work items and connecting them to code changes
+
+### Guidelines for VERSION_CONTROL
+
+#### GIT
+
+- Use conventional commits to create meaningful commit messages
+- Use feature branches with descriptive names following {{branch_naming_convention}}
+- Write meaningful commit messages that explain why changes were made, not just what
+- Keep commits focused on single logical changes to facilitate code review and bisection
+- Use interactive rebase to clean up history before merging feature branches
+- Leverage git hooks to enforce code quality checks before commits and pushes
+
+### Guidelines for ARCHITECTURE
+
+#### CLEAN_ARCHITECTURE
+
+- Strictly separate code into layers: entities, use cases, interfaces, and frameworks
+- Ensure dependencies point inward, with inner layers having no knowledge of outer layers
+- Implement domain entities that encapsulate {{business_rules}} without framework dependencies
+- Use interfaces (ports) and implementations (adapters) to isolate external dependencies
+- Create use cases that orchestrate entity interactions for specific business operations
+- Implement mappers to transform data between layers to maintain separation of concerns
+
+### Guidelines for STATIC_ANALYSIS
+
+#### ESLINT
+
+- Configure project-specific rules in eslint.config.js to enforce consistent coding standards
+- Use shareable configs like eslint-config-airbnb or eslint-config-standard as a foundation
+- Configure integration with Prettier to avoid rule conflicts for code formatting
+- Use the --fix flag in CI/CD pipelines to automatically correct fixable issues
+- Implement staged linting with husky and lint-staged to prevent committing non-compliant code
+
+### Guidelines for STATIC_ANALYSIS
+
+#### PRETTIER
+
+- Configure editor integration to format on save for immediate feedback
+- Use .prettierignore to exclude generated files, build artifacts
+- Set printWidth based on team preferences (80-120 characters) to improve code readability
+- Configure consistent quote style and semicolon usage to match team conventions
+- Implement CI checks to ensure all committed code adheres to the defined style
+
+
+
+
+
+

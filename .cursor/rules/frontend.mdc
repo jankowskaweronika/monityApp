@@ -1,0 +1,42 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# AI Rules for monityApp
+
+A mobile and responsive expense management application that allows users to easily track, categorize, and analyze their finances.
+
+## FRONTEND
+
+### Guidelines for REACT
+
+#### REACT_ROUTER
+
+- Use createBrowserRouter instead of BrowserRouter for better data loading and error handling
+- Implement lazy loading with React.lazy() for route components to improve initial load time
+- Use the useNavigate hook instead of the navigate component prop for programmatic navigation
+- Leverage loader and action functions to handle data fetching and mutations at the route level
+- Implement error boundaries with errorElement to gracefully handle routing and data errors
+- Use relative paths with dot notation (e.g., "../parent") to maintain route hierarchy flexibility
+- Utilize the useRouteLoaderData hook to access data from parent routes
+- Implement fetchers for non-navigation data mutations
+- Use route.lazy() for route-level code splitting with automatic loading states
+- Implement shouldRevalidate functions to control when data revalidation happens after navigation
+
+#### REDUX
+
+- Use Redux Toolkit (RTK) instead of plain Redux to reduce boilerplate code
+- Implement the slice pattern for organizing related state, reducers, and actions
+- Use RTK Query for data fetching to eliminate manual loading state management
+- Prefer createSelector for memoized selectors to prevent unnecessary recalculations
+- Normalize complex state structures using a flat entities approach with IDs as references
+- Implement middleware selectively and avoid overusing thunks for simple state updates
+- Use the listener middleware for complex side effects instead of thunks where appropriate
+- Leverage createEntityAdapter for standardized CRUD operations
+- Implement Redux DevTools for debugging in development environments
+- Use typed hooks (useAppDispatch, useAppSelector) with TypeScript for type safety
+
+
+
+
