@@ -7,6 +7,7 @@ import {
   ExpenseWithCategory 
 } from '../../types';
 import { z } from 'zod';
+import { SupabaseError } from '../utils/supabase.error';
 
 // Validation schemas
 export const listExpensesQuerySchema = z.object({
@@ -69,7 +70,7 @@ export class ExpenseService {
       );
 
     if (error) {
-      throw new Error(`Failed to fetch expenses: ${error.message}`);
+      throw SupabaseError.fromPostgrestError(error);
     }
 
     return {
@@ -87,9 +88,17 @@ export class ExpenseService {
   async createExpense(command: CreateExpenseCommand) {
     const validatedData = createExpenseSchema.parse(command);
     
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError) {
+      throw SupabaseError.fromAuthError(authError);
+    }
+    if (!user) {
+      throw new SupabaseError('UNAUTHORIZED', 'User not authenticated');
+    }
+
     const { data, error } = await supabase
       .from('expenses')
-      .insert(validatedData)
+      .insert({ ...validatedData, user_id: user.id })
       .select(`
         *,
         category:categories (
@@ -101,7 +110,7 @@ export class ExpenseService {
       .single();
 
     if (error) {
-      throw new Error(`Failed to create expense: ${error.message}`);
+      throw SupabaseError.fromPostgrestError(error);
     }
 
     return data as ExpenseWithCategory;
@@ -126,7 +135,7 @@ export class ExpenseService {
       .single();
 
     if (error) {
-      throw new Error(`Failed to update expense: ${error.message}`);
+      throw SupabaseError.fromPostgrestError(error);
     }
 
     return data as ExpenseWithCategory;
@@ -139,7 +148,7 @@ export class ExpenseService {
       .eq('id', id);
 
     if (error) {
-      throw new Error(`Failed to delete expense: ${error.message}`);
+      throw SupabaseError.fromPostgrestError(error);
     }
   }
 } 

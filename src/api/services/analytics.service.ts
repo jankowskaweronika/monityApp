@@ -8,6 +8,7 @@ import {
   TrendPoint
 } from '../../types';
 import { z } from 'zod';
+import { SupabaseError } from '../utils/supabase.error';
 
 // Validation schemas
 export const analyticsQuerySchema = z.object({
@@ -58,7 +59,6 @@ export class AnalyticsService {
     const validatedQuery = analyticsQuerySchema.parse(query);
     const period = await this.getPeriodInfo(validatedQuery);
 
-    // Get total amount and category breakdown
     const { data, error } = await supabase
       .from('expenses')
       .select(`
@@ -73,7 +73,7 @@ export class AnalyticsService {
       .lte('date', period.end_date);
 
     if (error) {
-      throw new Error(`Failed to fetch expense summary: ${error.message}`);
+      throw SupabaseError.fromPostgrestError(error);
     }
 
     // Calculate total and category breakdown
@@ -111,16 +111,14 @@ export class AnalyticsService {
     const validatedQuery = analyticsQuerySchema.parse(query);
     const period = await this.getPeriodInfo(validatedQuery);
 
-    // Get all categories first
     const { data: categories, error: categoriesError } = await supabase
       .from('categories')
       .select('id, name, color');
 
     if (categoriesError) {
-      throw new Error(`Failed to fetch categories: ${categoriesError.message}`);
+      throw SupabaseError.fromPostgrestError(categoriesError);
     }
 
-    // Get expenses for the period
     const { data: expenses, error: expensesError } = await supabase
       .from('expenses')
       .select('amount, date, category_id')
@@ -128,7 +126,7 @@ export class AnalyticsService {
       .lte('date', period.end_date);
 
     if (expensesError) {
-      throw new Error(`Failed to fetch expenses: ${expensesError.message}`);
+      throw SupabaseError.fromPostgrestError(expensesError);
     }
 
     // Group expenses by category and date
