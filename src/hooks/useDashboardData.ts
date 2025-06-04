@@ -1,6 +1,6 @@
 // src/hooks/useDashboardData.ts
 import { useState, useEffect, useCallback } from 'react';
-import { DashboardData, LoadingState, DashboardError } from '../types/dashboard';
+import { DashboardData, LoadingState, DashboardError } from '../types/dashboardTypes';
 import { CreateExpenseCommand, ExpenseSummaryResponse, ListExpensesResponse, ListCategoriesResponse } from '../types/types';
 import { ExpenseService } from '../api/services/expense.service';
 import { CategoryService } from '../api/services/category.service';

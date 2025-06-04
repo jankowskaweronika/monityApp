@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import { PeriodInfo, PeriodChangeHandler } from '../../types/dashboard';
+import { PeriodInfo, PeriodChangeHandler } from '../../types/dashboardTypes';
 import { CategoryBreakdown } from '../../types/types'
 
 interface PeriodSummaryProps {

@@ -24,7 +24,8 @@ export const createExpenseSchema = z.object({
   category_id: z.string().uuid(),
   amount: z.number().positive(),
   description: z.string().min(1).max(200),
-  date: z.string().datetime()
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format')
+    .transform(date => `${date}T00:00:00.000Z`) // Convert to ISO datetime
 });
 
 export const updateExpenseSchema = createExpenseSchema.partial().extend({
@@ -88,17 +89,14 @@ export class ExpenseService {
   async createExpense(command: CreateExpenseCommand) {
     const validatedData = createExpenseSchema.parse(command);
     
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError) {
-      throw SupabaseError.fromAuthError(authError);
-    }
-    if (!user) {
-      throw new SupabaseError('UNAUTHORIZED', 'User not authenticated');
-    }
-
+    // During development, we don't require user_id
     const { data, error } = await supabase
       .from('expenses')
-      .insert({ ...validatedData, user_id: user.id })
+      .insert({ 
+        ...validatedData,
+        // user_id is optional during development
+        user_id: null 
+      })
       .select(`
         *,
         category:categories (
@@ -110,6 +108,7 @@ export class ExpenseService {
       .single();
 
     if (error) {
+      console.error('Error creating expense:', error);
       throw SupabaseError.fromPostgrestError(error);
     }
 

@@ -1,6 +1,6 @@
 // src/hooks/useDashboardData.ts
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { DashboardData, LoadingState, DashboardError } from '../types/dashboard';
+import { DashboardData, LoadingState, DashboardError } from '../types/dashboardTypes';
 import { CreateExpenseCommand, ExpenseWithCategory } from '../types/types';
 import { ExpenseService } from '../api/services/expense.service';
 import { CategoryService } from '../api/services/category.service';
@@ -345,19 +345,31 @@ export const DashboardView: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // Ensure date is in YYYY-MM-DD format
+      const formattedDate = formData.date.split('T')[0];
+
+      console.log('Submitting expense:', {
+        amount: parseFloat(formData.amount),
+        category_id: formData.categoryId,
+        date: formattedDate,
+        description: formData.description
+      });
+
       await addExpense({
         amount: parseFloat(formData.amount),
         category_id: formData.categoryId,
-        date: formData.date,
+        date: formattedDate,
         description: formData.description
       });
+
       setFormData({
         amount: '',
         categoryId: '',
         date: new Date().toISOString().split('T')[0],
         description: ''
       });
-    } catch {
+    } catch (err) {
+      console.error('Error adding expense:', err);
       // Error is handled by the hook, we just need to catch it
     }
   };
