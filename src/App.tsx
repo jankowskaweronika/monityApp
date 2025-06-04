@@ -1,6 +1,8 @@
+import Dashboard from "./pages/dashboard"
+
 const App = () => {
   return (
-    <div>App</div>
+    <div><Dashboard /></div>
   )
 }
 
