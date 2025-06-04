@@ -1,8 +1,10 @@
-import Dashboard from "./pages/dashboard"
+import { DashboardView } from './pages/DashboardView'
 
 const App = () => {
   return (
-    <div><Dashboard /></div>
+    <div>
+      <DashboardView />
+    </div>
   )
 }
 

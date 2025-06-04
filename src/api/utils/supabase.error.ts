@@ -1,5 +1,5 @@
 import { PostgrestError } from '@supabase/supabase-js';
-import { ApiError } from '../../types';
+import { ApiError } from '../../types/types';
 
 export class SupabaseError extends Error {
   constructor(

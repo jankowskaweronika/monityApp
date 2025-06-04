@@ -1,4 +1,6 @@
-import { Tables, TablesInsert, TablesUpdate } from './db/database.types';
+import { Tables, TablesInsert, TablesUpdate } from '../db/database.types';
+
+export type { Tables, TablesInsert, TablesUpdate };
 
 // Common Types
 export interface PaginationMeta {
@@ -57,10 +59,12 @@ export interface ListExpensesResponse {
   meta: PaginationMeta;
 }
 
-export type CreateExpenseCommand = Pick<
-  TablesInsert<'expenses'>,
-  'category_id' | 'amount' | 'description' | 'date'
->;
+export type CreateExpenseCommand = {
+  category_id: string;
+  amount: number;
+  description: string;
+  date: string;  // Required field
+};
 
 export type UpdateExpenseCommand = Partial<
   Omit<TablesUpdate<'expenses'>, 'id'>

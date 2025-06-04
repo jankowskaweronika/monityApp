@@ -5,7 +5,7 @@ import {
   CreateExpenseCommand, 
   UpdateExpenseCommand,
   ExpenseWithCategory 
-} from '../../types';
+} from '../../types/types';
 import { z } from 'zod';
 import { SupabaseError } from '../utils/supabase.error';
 

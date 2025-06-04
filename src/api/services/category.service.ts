@@ -1,5 +1,5 @@
 import { supabase } from '../../db/supabase.client';
-import { ListCategoriesQuery, ListCategoriesResponse, CreateCategoryCommand, UpdateCategoryCommand } from '../../types';
+import { ListCategoriesQuery, ListCategoriesResponse, CreateCategoryCommand, UpdateCategoryCommand } from '../../types/types';
 import { z } from 'zod';
 import { SupabaseError } from '../utils/supabase.error';
 
