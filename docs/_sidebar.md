@@ -1,2 +1,3 @@
 - [Home](/)
 - [Authentication](auth.md)
+- [Architektura UI](ui-architecture.md)
