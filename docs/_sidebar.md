@@ -1,0 +1,2 @@
+- [Home](/)
+- [Authentication](auth.md)

@@ -1,5 +1,6 @@
-# Diagram przepływu autentykacji - MonityApp
+# Authentication Flow
 
+```mermaid
 sequenceDiagram
 autonumber
 participant U as Użytkownik
@@ -110,3 +111,4 @@ participant DB as Supabase DB
         F-->>U: Strona logowania
         deactivate F
     end
+```
