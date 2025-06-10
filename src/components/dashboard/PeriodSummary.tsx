@@ -1,10 +1,9 @@
-// src/components/dashboard/PeriodSummary.tsx
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
 import { ChevronDown, TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import { PeriodInfo, PeriodChangeHandler } from '../../types/dashboardTypes';
-import { CategoryBreakdown } from '../../types/types'
+import { PeriodInfo } from '../../types/types';
+import { CategoryBreakdown } from '../../types/types';
 
 interface PeriodSummaryProps {
   currentPeriod: PeriodInfo;
@@ -12,15 +11,15 @@ interface PeriodSummaryProps {
   categoryBreakdown: CategoryBreakdown[];
   isLoading: boolean;
   selectedPeriod: string;
-  onPeriodChange: PeriodChangeHandler;
+  onPeriodChange: (period: string) => void;
   previousAmount?: number;
 }
 
 const PERIOD_OPTIONS = [
-  { id: 'day', name: 'Today', label: 'Daily' },
-  { id: 'week', name: 'This Week', label: 'Weekly' },
-  { id: 'month', name: 'This Month', label: 'Monthly' },
-  { id: 'year', name: 'This Year', label: 'Yearly' },
+  { id: 'day', name: 'Today' },
+  { id: 'week', name: 'This Week' },
+  { id: 'month', name: 'This Month' },
+  { id: 'year', name: 'This Year' },
 ];
 
 export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
@@ -37,31 +36,20 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
 
   const currentPeriodOption = PERIOD_OPTIONS.find(option => option.id === selectedPeriod) || PERIOD_OPTIONS[2];
 
-  // Calculate trend if previous amount is available
+  // Calculate trend
   const trendDirection = previousAmount !== undefined
-    ? totalAmount > previousAmount ? 'up'
+    ? (totalAmount > previousAmount ? 'up'
       : totalAmount < previousAmount ? 'down'
-        : 'stable'
-    : undefined;
+        : 'stable') : 'stable';
 
   const changePercentage = previousAmount !== undefined && previousAmount > 0
     ? Math.abs(((totalAmount - previousAmount) / previousAmount) * 100)
     : undefined;
 
-  const expenseCount = categoryBreakdown.reduce((total, category) => {
-    // This is approximate - we'd need actual expense count from API
-    return total + Math.round(category.amount / 10); // Rough estimate
-  }, 0);
-
-  const handlePeriodSelect = (periodId: string) => {
-    onPeriodChange(periodId);
-    setIsDropdownOpen(false);
-  };
-
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('pl-PL', {
       style: 'currency',
-      currency: 'PLN',
+      currency: 'PLN'
     }).format(amount);
   };
 
@@ -69,7 +57,7 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
     return new Date(dateStr).toLocaleDateString('pl-PL', {
       day: 'numeric',
       month: 'short',
-      year: 'numeric',
+      year: 'numeric'
     });
   };
 
@@ -77,29 +65,29 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
     <Card>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Expense Summary</CardTitle>
-
-          {/* Period Selector */}
+          <CardTitle className="text-lg font-semibold">Period Summary</CardTitle>
           <div className="relative">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              disabled={isLoading}
-              className="min-w-[120px] justify-between"
+              className="gap-2"
             >
-              {currentPeriodOption.label}
-              <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              {currentPeriodOption.name}
+              <ChevronDown className={`h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </Button>
 
             {isDropdownOpen && (
-              <div className="absolute right-0 top-full mt-1 w-40 bg-background border rounded-md shadow-lg z-10">
+              <div className="absolute right-0 top-full mt-1 w-40 rounded-md bg-background border shadow-lg z-10">
                 {PERIOD_OPTIONS.map((option) => (
                   <button
                     key={option.id}
-                    onClick={() => handlePeriodSelect(option.id)}
-                    className={`w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors first:rounded-t-md last:rounded-b-md ${option.id === selectedPeriod ? 'bg-muted font-medium' : ''
-                      }`}
+                    onClick={() => {
+                      onPeriodChange(option.id);
+                      setIsDropdownOpen(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors
+                                            ${option.id === selectedPeriod ? 'bg-muted font-medium' : ''}`}
                   >
                     {option.name}
                   </button>
@@ -110,16 +98,15 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent>
         {isLoading ? (
           <div className="space-y-3">
-            <div className="h-8 bg-muted rounded animate-pulse"></div>
-            <div className="h-4 bg-muted rounded w-2/3 animate-pulse"></div>
-            <div className="h-4 bg-muted rounded w-1/2 animate-pulse"></div>
+            <div className="h-8 bg-muted rounded animate-pulse" />
+            <div className="h-4 bg-muted rounded w-2/3 animate-pulse" />
+            <div className="h-4 bg-muted rounded w-1/2 animate-pulse" />
           </div>
         ) : (
           <>
-            {/* Main Amount Display */}
             <div className="space-y-1">
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-bold">
@@ -128,44 +115,43 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
                 {trendDirection && changePercentage !== undefined && (
                   <div className={`flex items-center gap-1 text-sm ${trendDirection === 'up' ? 'text-red-500' :
                     trendDirection === 'down' ? 'text-green-500' :
-                      'text-muted-foreground'
-                    }`}>
-                    {trendDirection === 'up' && <TrendingUp className="w-4 h-4" />}
-                    {trendDirection === 'down' && <TrendingDown className="w-4 h-4" />}
-                    {trendDirection === 'stable' && <Minus className="w-4 h-4" />}
+                      'text-muted-foreground'}`}
+                  >
+                    {trendDirection === 'up' && <TrendingUp className="h-4 w-4" />}
+                    {trendDirection === 'down' && <TrendingDown className="h-4 w-4" />}
+                    {trendDirection === 'stable' && <Minus className="h-4 w-4" />}
                     {changePercentage.toFixed(1)}%
                   </div>
                 )}
               </div>
-
               <div className="text-sm text-muted-foreground">
                 {formatDate(currentPeriod.start_date)} - {formatDate(currentPeriod.end_date)}
               </div>
             </div>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 gap-4 pt-2 border-t">
+            <div className="grid grid-cols-2 gap-4 mt-4 py-4 border-y">
               <div>
                 <p className="text-sm text-muted-foreground">Categories</p>
                 <p className="text-lg font-semibold">{categoryBreakdown.length}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Transactions</p>
-                <p className="text-lg font-semibold">{expenseCount}</p>
+                <p className="text-sm text-muted-foreground">Avg. per day</p>
+                <p className="text-lg font-semibold">
+                  {formatCurrency(totalAmount / 30)}
+                </p>
               </div>
             </div>
 
-            {/* Expandable Details */}
             {categoryBreakdown.length > 0 && (
-              <div className="pt-2 border-t">
+              <div className="mt-4">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowDetails(!showDetails)}
-                  className="w-full justify-between p-0 h-auto font-normal text-muted-foreground hover:text-foreground"
+                  className="w-full justify-between p-0 h-auto font-normal hover:bg-transparent"
                 >
-                  <span>Category breakdown</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${showDetails ? 'rotate-180' : ''}`} />
+                  <span className="text-sm text-muted-foreground">Category breakdown</span>
+                  <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${showDetails ? 'rotate-180' : ''}`} />
                 </Button>
 
                 {showDetails && (
@@ -179,7 +165,7 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
                             <div
                               className="w-3 h-3 rounded-full"
                               style={{ backgroundColor: category.category_color }}
-                            ></div>
+                            />
                             <span className="text-sm">{category.category_name}</span>
                           </div>
                           <div className="text-right">

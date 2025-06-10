@@ -1,327 +1,11 @@
-// src/hooks/useDashboardData.ts
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { DashboardData, LoadingState, DashboardError } from '../types/dashboardTypes';
-import { CreateExpenseCommand, ExpenseWithCategory } from '../types/types';
-import { ExpenseService } from '../api/services/expense.service';
-import { CategoryService } from '../api/services/category.service';
-import { AnalyticsService } from '../api/services/analytics.service';
+import React, { useState } from 'react';
 import { ExpensesChart } from '../components/dashboard/ExpensesChart';
+import { PeriodSummary } from '../components/dashboard/PeriodSummary';
+import { Button } from '../components/ui/button';
+import { Card, CardContent } from '../components/ui/card';
+import { Plus } from 'lucide-react';
+import { useDashboardData } from '../hooks/useDashboardData';
 
-export interface UseDashboardDataReturn {
-  dashboardData: DashboardData;
-  selectedPeriod: string;
-  isModalOpen: boolean;
-  loadingState: LoadingState;
-  error: DashboardError | null;
-  refreshData: () => Promise<void>;
-  changePeriod: (period: string) => void;
-  openModal: () => void;
-  closeModal: () => void;
-  addExpense: (data: CreateExpenseCommand) => Promise<void>;
-}
-
-export const useDashboardData = (): UseDashboardDataReturn => {
-  const [selectedPeriod, setSelectedPeriod] = useState<string>('month');
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [error, setError] = useState<DashboardError | null>(null);
-
-  const [loadingState, setLoadingState] = useState<LoadingState>({
-    summary: true,
-    expenses: true,
-    categories: true,
-    addingExpense: false,
-  });
-
-  const [dashboardData, setDashboardData] = useState<DashboardData>({
-    summary: {
-      total_amount: 0,
-      category_breakdown: [],
-      period: {
-        id: selectedPeriod,
-        name: 'Month',
-        start_date: new Date().toISOString(),
-        end_date: new Date().toISOString(),
-      },
-    },
-    recentExpenses: [],
-    availableCategories: [],
-    currentPeriod: {
-      id: selectedPeriod,
-      name: 'Month',
-      start_date: new Date().toISOString(),
-      end_date: new Date().toISOString(),
-    },
-    isLoading: true,
-    error: undefined,
-  });
-
-  // Service instances - stable across renders
-  const expenseService = useMemo(() => new ExpenseService(), []);
-  const categoryService = useMemo(() => new CategoryService(), []);
-  const analyticsService = useMemo(() => new AnalyticsService(), []);
-
-  // Refresh all data
-  const refreshData = useCallback(async () => {
-    setError(null);
-
-    // Refresh summary data
-    try {
-      setLoadingState(prev => ({ ...prev, summary: true }));
-      const summaryResponse = await analyticsService.getExpenseSummary({
-        period: selectedPeriod,
-      });
-
-      setDashboardData(prev => ({
-        ...prev,
-        summary: summaryResponse,
-        currentPeriod: summaryResponse.period,
-      }));
-    } catch (err) {
-      setError({
-        type: 'network',
-        message: 'Failed to load summary data',
-        details: { error: err },
-      });
-    } finally {
-      setLoadingState(prev => ({ ...prev, summary: false }));
-    }
-
-    // Refresh recent expenses
-    try {
-      setLoadingState(prev => ({ ...prev, expenses: true }));
-      const expensesResponse = await expenseService.listExpenses({
-        limit: 5,
-        sort_by: 'date',
-        sort_order: 'desc',
-      });
-
-      setDashboardData(prev => ({
-        ...prev,
-        recentExpenses: expensesResponse.data,
-      }));
-    } catch (err) {
-      setError({
-        type: 'network',
-        message: 'Failed to load recent expenses',
-        details: { error: err },
-      });
-    } finally {
-      setLoadingState(prev => ({ ...prev, expenses: false }));
-    }
-
-    // Refresh categories
-    try {
-      setLoadingState(prev => ({ ...prev, categories: true }));
-      const categoriesResponse = await categoryService.listCategories({
-        include_default: true,
-      });
-
-      setDashboardData(prev => ({
-        ...prev,
-        availableCategories: categoriesResponse.data,
-      }));
-    } catch (err) {
-      setError({
-        type: 'network',
-        message: 'Failed to load categories',
-        details: { error: err },
-      });
-    } finally {
-      setLoadingState(prev => ({ ...prev, categories: false }));
-    }
-  }, [selectedPeriod, analyticsService, expenseService, categoryService]);
-
-  // Change period handler
-  const changePeriod = useCallback((period: string) => {
-    setSelectedPeriod(period);
-  }, []);
-
-  // Modal handlers
-  const openModal = useCallback(() => {
-    setIsModalOpen(true);
-  }, []);
-
-  const closeModal = useCallback(() => {
-    setIsModalOpen(false);
-  }, []);
-
-  // Add expense with optimistic update
-  const addExpense = useCallback(async (data: CreateExpenseCommand) => {
-    if (!data.date) {
-      throw new Error('Date is required');
-    }
-
-    try {
-      setLoadingState(prev => ({ ...prev, addingExpense: true }));
-
-      // Get current categories from state
-      setDashboardData(currentData => {
-        // Optimistic update - add temporary expense to recent list
-        const optimisticExpense: ExpenseWithCategory = {
-          id: `temp-${Date.now()}`,
-          user_id: 'current-user',
-          category_id: data.category_id,
-          amount: data.amount,
-          description: data.description || '',
-          date: data.date,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          category: currentData.availableCategories.find(cat => cat.id === data.category_id) || {
-            id: data.category_id,
-            name: 'Unknown',
-            color: '#888888',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            is_default: false,
-            description: null
-          },
-        };
-
-        return {
-          ...currentData,
-          recentExpenses: [optimisticExpense, ...currentData.recentExpenses.slice(0, 4)],
-        };
-      });
-
-      // Actual API call
-      await expenseService.createExpense(data);
-
-      // Refresh data after successful creation
-      await refreshData();
-
-      // Close modal on success
-      setIsModalOpen(false);
-
-    } catch (err) {
-      // Rollback optimistic update on error - reload recent expenses
-      try {
-        const expensesResponse = await expenseService.listExpenses({
-          limit: 5,
-          sort_by: 'date',
-          sort_order: 'desc',
-        });
-
-        setDashboardData(prev => ({
-          ...prev,
-          recentExpenses: expensesResponse.data,
-        }));
-      } catch {
-        // If rollback fails, just keep the optimistic update
-      }
-
-      setError({
-        type: 'validation',
-        message: 'Failed to add expense',
-        details: { error: err },
-      });
-      throw err; // Re-throw for form error handling
-    } finally {
-      setLoadingState(prev => ({ ...prev, addingExpense: false }));
-    }
-  }, [expenseService, refreshData]);
-
-  // Initial data load
-  useEffect(() => {
-    const loadInitialData = async () => {
-      setError(null);
-
-      // Load summary data
-      try {
-        setLoadingState(prev => ({ ...prev, summary: true }));
-        const summaryResponse = await analyticsService.getExpenseSummary({
-          period: selectedPeriod,
-        });
-
-        setDashboardData(prev => ({
-          ...prev,
-          summary: summaryResponse,
-          currentPeriod: summaryResponse.period,
-        }));
-      } catch (err) {
-        setError({
-          type: 'network',
-          message: 'Failed to load summary data',
-          details: { error: err },
-        });
-      } finally {
-        setLoadingState(prev => ({ ...prev, summary: false }));
-      }
-
-      // Load recent expenses
-      try {
-        setLoadingState(prev => ({ ...prev, expenses: true }));
-        const expensesResponse = await expenseService.listExpenses({
-          limit: 5,
-          sort_by: 'date',
-          sort_order: 'desc',
-        });
-
-        setDashboardData(prev => ({
-          ...prev,
-          recentExpenses: expensesResponse.data,
-        }));
-      } catch (err) {
-        setError({
-          type: 'network',
-          message: 'Failed to load recent expenses',
-          details: { error: err },
-        });
-      } finally {
-        setLoadingState(prev => ({ ...prev, expenses: false }));
-      }
-
-      // Load categories
-      try {
-        setLoadingState(prev => ({ ...prev, categories: true }));
-        const categoriesResponse = await categoryService.listCategories({
-          include_default: true,
-        });
-
-        setDashboardData(prev => ({
-          ...prev,
-          availableCategories: categoriesResponse.data,
-        }));
-      } catch (err) {
-        setError({
-          type: 'network',
-          message: 'Failed to load categories',
-          details: { error: err },
-        });
-      } finally {
-        setLoadingState(prev => ({ ...prev, categories: false }));
-      }
-    };
-
-    loadInitialData();
-  }, [selectedPeriod, analyticsService, expenseService, categoryService]); // Stable dependencies
-
-  // No separate effect for period changes since it's handled in initial load
-
-  // Update isLoading flag based on loading states
-  useEffect(() => {
-    const isLoading = loadingState.summary || loadingState.expenses || loadingState.categories;
-    setDashboardData(prev => ({
-      ...prev,
-      isLoading,
-      error: error?.message
-    }));
-  }, [loadingState.summary, loadingState.expenses, loadingState.categories, error]);
-
-  return {
-    dashboardData,
-    selectedPeriod,
-    isModalOpen,
-    loadingState,
-    error,
-    refreshData,
-    changePeriod,
-    openModal,
-    closeModal,
-    addExpense,
-  };
-};
-
-// Dashboard View Component
 export const DashboardView: React.FC = () => {
   const {
     dashboardData,
@@ -346,20 +30,10 @@ export const DashboardView: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Ensure date is in YYYY-MM-DD format
-      const formattedDate = formData.date.split('T')[0];
-
-      console.log('Submitting expense:', {
-        amount: parseFloat(formData.amount),
-        category_id: formData.categoryId,
-        date: formattedDate,
-        description: formData.description
-      });
-
       await addExpense({
         amount: parseFloat(formData.amount),
         category_id: formData.categoryId,
-        date: formattedDate,
+        date: formData.date,
         description: formData.description
       });
 
@@ -371,85 +45,115 @@ export const DashboardView: React.FC = () => {
       });
     } catch (err) {
       console.error('Error adding expense:', err);
-      // Error is handled by the hook, we just need to catch it
     }
   };
 
   return (
-    <div className="dashboard">
-      <div className="dashboard-header">
-        <h1>Dashboard</h1>
-        <div className="dashboard-controls">
-          <select
-            value={selectedPeriod}
-            onChange={(e) => changePeriod(e.target.value)}
-            disabled={loadingState.summary}
-          >
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-            <option value="year">This Year</option>
-          </select>
-          <button onClick={refreshData} disabled={loadingState.summary}>
-            Refresh
-          </button>
-          <button onClick={openModal}>
-            Add Expense
-          </button>
-        </div>
+    <div className="container mx-auto px-4 py-8 space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <Button onClick={refreshData} variant="outline" disabled={loadingState.summary}>
+          Refresh
+        </Button>
       </div>
 
       {error && (
-        <div className="error-message">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
           {error.message}
         </div>
       )}
 
-      {dashboardData.isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <div>
-          <div className="summary">
+      <div className="grid gap-6 md:grid-cols-2">
+        <PeriodSummary
+          currentPeriod={dashboardData.currentPeriod}
+          totalAmount={dashboardData.summary.total_amount}
+          categoryBreakdown={dashboardData.summary.category_breakdown}
+          isLoading={loadingState.summary}
+          selectedPeriod={selectedPeriod}
+          onPeriodChange={changePeriod}
+        />
+
+        <Card>
+          <CardContent className="p-6">
             <ExpensesChart
               categoryBreakdown={dashboardData.summary.category_breakdown}
               totalAmount={dashboardData.summary.total_amount}
             />
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Recent Expenses</h2>
           </div>
-          <div className="recent-expenses">
-            <h2>Recent Expenses</h2>
-            {dashboardData.recentExpenses.map(expense => (
-              <div key={expense.id} className="expense-item">
-                <span>{expense.description}</span>
-                <span>{expense.amount}</span>
-                <span>{new Date(expense.date).toLocaleDateString()}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+
+          {loadingState.expenses ? (
+            <div className="animate-pulse space-y-3">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-12 bg-muted rounded" />
+              ))}
+            </div>
+          ) : dashboardData.recentExpenses.length === 0 ? (
+            <div className="text-center py-6 text-muted-foreground">
+              No expenses yet. Add your first expense!
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {dashboardData.recentExpenses.map((expense) => (
+                <div
+                  key={expense.id}
+                  className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-3 h-3 rounded-full"
+                      style={{ backgroundColor: expense.category.color }}
+                    />
+                    <div>
+                      <div className="font-medium">{expense.description || 'No description'}</div>
+                      <div className="text-sm text-muted-foreground">{expense.category.name}</div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-medium">{new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' }).format(expense.amount)}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {new Date(expense.date).toLocaleDateString('pl-PL')}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {isModalOpen && (
-        <div className="modal">
-          <div className="modal-content">
-            <h2>Add New Expense</h2>
-            <form onSubmit={handleSubmit}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+          <div className="bg-background p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h2 className="text-xl font-semibold mb-4">Add New Expense</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="amount">Amount:</label>
+                <label htmlFor="amount" className="block text-sm font-medium mb-1">Amount</label>
                 <input
                   type="number"
                   id="amount"
                   value={formData.amount}
                   onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
+                  className="w-full p-2 border rounded"
                   required
                   step="0.01"
                   min="0"
                 />
               </div>
               <div>
-                <label htmlFor="category">Category:</label>
+                <label htmlFor="category" className="block text-sm font-medium mb-1">Category</label>
                 <select
                   id="category"
                   value={formData.categoryId}
                   onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
+                  className="w-full p-2 border rounded"
                   required
                 >
                   <option value="">Select a category</option>
@@ -461,37 +165,48 @@ export const DashboardView: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label htmlFor="date">Date:</label>
+                <label htmlFor="date" className="block text-sm font-medium mb-1">Date</label>
                 <input
                   type="date"
                   id="date"
                   value={formData.date}
                   onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                  className="w-full p-2 border rounded"
                   required
                 />
               </div>
               <div>
-                <label htmlFor="description">Description:</label>
+                <label htmlFor="description" className="block text-sm font-medium mb-1">Description</label>
                 <input
                   type="text"
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  className="w-full p-2 border rounded"
                   required
                 />
               </div>
-              <div className="form-actions">
-                <button type="submit" disabled={loadingState.addingExpense}>
-                  {loadingState.addingExpense ? 'Adding...' : 'Add Expense'}
-                </button>
-                <button type="button" onClick={closeModal}>
+              <div className="flex justify-end gap-3 mt-6">
+                <Button type="button" variant="outline" onClick={closeModal}>
                   Cancel
-                </button>
+                </Button>
+                <Button type="submit" disabled={loadingState.addingExpense}>
+                  {loadingState.addingExpense ? 'Adding...' : 'Add Expense'}
+                </Button>
               </div>
             </form>
           </div>
         </div>
       )}
+
+      <Button
+        className="fixed right-6 bottom-6 shadow-lg"
+        size="lg"
+        onClick={openModal}
+      >
+        <Plus className="w-5 h-5 mr-2" />
+        Add Expense
+      </Button>
     </div>
   );
 };

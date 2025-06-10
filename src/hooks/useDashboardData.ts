@@ -1,4 +1,3 @@
-// src/hooks/useDashboardData.ts
 import { useState, useEffect, useCallback } from 'react';
 import { DashboardData, LoadingState, DashboardError } from '../types/dashboardTypes';
 import { CreateExpenseCommand, ExpenseSummaryResponse, ListExpensesResponse, ListCategoriesResponse } from '../types/types';
@@ -18,6 +17,11 @@ export interface UseDashboardDataReturn {
   closeModal: () => void;
   addExpense: (data: CreateExpenseCommand) => Promise<void>;
 }
+
+// Service instances - moved outside the hook
+const expenseService = new ExpenseService();
+const categoryService = new CategoryService();
+const analyticsService = new AnalyticsService();
 
 export const useDashboardData = (): UseDashboardDataReturn => {
   const [selectedPeriod, setSelectedPeriod] = useState<string>('month');
@@ -54,11 +58,6 @@ export const useDashboardData = (): UseDashboardDataReturn => {
     error: undefined,
   });
 
-  // Service instances
-  const expenseService = new ExpenseService();
-  const categoryService = new CategoryService();
-  const analyticsService = new AnalyticsService();
-
   // Fetch dashboard summary data
   const fetchSummaryData = useCallback(async () => {
     try {
@@ -81,7 +80,7 @@ export const useDashboardData = (): UseDashboardDataReturn => {
     } finally {
       setLoadingState(prev => ({ ...prev, summary: false }));
     }
-  }, [selectedPeriod, analyticsService]);
+  }, [selectedPeriod]);
 
   // Fetch recent expenses
   const fetchRecentExpenses = useCallback(async () => {
@@ -106,7 +105,7 @@ export const useDashboardData = (): UseDashboardDataReturn => {
     } finally {
       setLoadingState(prev => ({ ...prev, expenses: false }));
     }
-  }, [expenseService]);
+  }, []);
 
   // Fetch available categories
   const fetchCategories = useCallback(async () => {
@@ -129,7 +128,7 @@ export const useDashboardData = (): UseDashboardDataReturn => {
     } finally {
       setLoadingState(prev => ({ ...prev, categories: false }));
     }
-  }, [categoryService]);
+  }, []);
 
   // Refresh all data
   const refreshData = useCallback(async () => {
@@ -186,7 +185,7 @@ export const useDashboardData = (): UseDashboardDataReturn => {
       await expenseService.createExpense(data);
       
       // Refresh data after successful creation
-      await refreshData();
+      await Promise.all([fetchSummaryData(), fetchRecentExpenses()]);
       
       // Close modal on success
       setIsModalOpen(false);
@@ -200,21 +199,21 @@ export const useDashboardData = (): UseDashboardDataReturn => {
         message: 'Failed to add expense',
         details: { error: err },
       });
-      throw err; // Re-throw for form error handling
+      throw err;
     } finally {
       setLoadingState(prev => ({ ...prev, addingExpense: false }));
     }
-  }, [expenseService, dashboardData.availableCategories, refreshData, fetchRecentExpenses]);
+  }, [dashboardData.availableCategories, fetchSummaryData, fetchRecentExpenses]);
 
-  // Initial data load
+  // Initial data load - only run once
   useEffect(() => {
-    refreshData();
-  }, [refreshData]);
+    void refreshData();
+  }, []);
 
   // Reload summary when period changes
   useEffect(() => {
-    fetchSummaryData();
-  }, [selectedPeriod, fetchSummaryData]);
+    void fetchSummaryData();
+  }, [selectedPeriod]);
 
   // Update isLoading flag based on loading states
   const isLoading = loadingState.summary || loadingState.expenses || loadingState.categories;
