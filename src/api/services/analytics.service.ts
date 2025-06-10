@@ -21,20 +21,27 @@ export class AnalyticsService {
   private async getPeriodInfo(query: AnalyticsQuery): Promise<PeriodInfo> {
     const now = new Date();
     let startDate: Date;
-    let endDate: Date = now;
+    let endDate = new Date(now);
 
     switch (query.period) {
       case 'day':
-        startDate = new Date(now.setHours(0, 0, 0, 0));
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
         break;
       case 'week':
-        startDate = new Date(now.setDate(now.getDate() - 7));
+        // Get the first day of the current week (Monday)
+        startDate = new Date(now);
+        startDate.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1));
+        startDate.setHours(0, 0, 0, 0);
+        endDate = new Date(now);
         break;
       case 'month':
-        startDate = new Date(now.setDate(1));
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
         break;
       case 'year':
         startDate = new Date(now.getFullYear(), 0, 1);
+        endDate = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999);
         break;
       default:
         throw new Error('Invalid period');
@@ -159,4 +166,4 @@ export class AnalyticsService {
       };
     });
   }
-} 
+}

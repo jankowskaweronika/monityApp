@@ -5,6 +5,7 @@ import { CreateExpenseCommand, ExpenseWithCategory } from '../types/types';
 import { ExpenseService } from '../api/services/expense.service';
 import { CategoryService } from '../api/services/category.service';
 import { AnalyticsService } from '../api/services/analytics.service';
+import { ExpensesChart } from '../components/dashboard/ExpensesChart';
 
 export interface UseDashboardDataReturn {
   dashboardData: DashboardData;
@@ -408,8 +409,10 @@ export const DashboardView: React.FC = () => {
       ) : (
         <div>
           <div className="summary">
-            <h2>Summary</h2>
-            <p>Total Amount: {dashboardData.summary.total_amount}</p>
+            <ExpensesChart
+              categoryBreakdown={dashboardData.summary.category_breakdown}
+              totalAmount={dashboardData.summary.total_amount}
+            />
           </div>
           <div className="recent-expenses">
             <h2>Recent Expenses</h2>
