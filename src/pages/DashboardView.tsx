@@ -208,6 +208,19 @@ export const DashboardView: React.FC = () => {
                   required
                 />
               </div>
+              <div>
+                <label htmlFor="description" className="block text-sm font-medium mb-2 text-muted-foreground">Description</label>
+                <input
+                  type="text"
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  className="w-full p-2 rounded-md border bg-background shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  required
+                  placeholder="Enter expense description"
+                  minLength={1}
+                />
+              </div>
               <div className="flex justify-end gap-2 pt-2">
                 <Button type="button" variant="outline" onClick={closeModal}>Cancel</Button>
                 <Button type="submit">Add Expense</Button>
