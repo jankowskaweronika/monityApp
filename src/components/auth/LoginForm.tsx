@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import { FormField } from './FormField';
 import { Link } from 'react-router-dom';
+import { SocialAuthButtons } from './SocialAuthButtons';
 
 interface LoginFormProps {
     onSubmit: (data: { email: string; password: string }) => Promise<void>;
@@ -123,8 +124,21 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                 className="w-full"
                 disabled={isLoading || Object.keys(validationErrors).length > 0}
             >
-                {isLoading ? 'Signing in...' : 'Sign in'}
+                {isLoading ? 'Signing in...' : 'Sign in with Email'}
             </Button>
+
+            <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t"></div>
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                        Or continue with
+                    </span>
+                </div>
+            </div>
+
+            <SocialAuthButtons isLoading={isLoading} />
 
             <div className="text-sm text-center text-muted-foreground">
                 Don't have an account?{' '}

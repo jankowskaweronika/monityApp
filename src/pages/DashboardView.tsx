@@ -5,8 +5,11 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Plus } from 'lucide-react';
 import { useDashboardData } from '../hooks/useDashboardData';
+import { useAppSelector } from '../store/hooks';
+import { Link } from 'react-router-dom';
 
 export const DashboardView: React.FC = () => {
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const {
     dashboardData,
     selectedPeriod,
@@ -48,6 +51,25 @@ export const DashboardView: React.FC = () => {
     }
   };
 
+  const renderAuthPrompt = () => {
+    if (!isAuthenticated && !loadingState.summary && !dashboardData.recentExpenses.length) {
+      return (
+        <div className="text-center py-6 space-y-4">
+          <p className="text-muted-foreground">Sign in to start tracking your expenses!</p>
+          <div className="space-x-4">
+            <Button variant="outline" asChild>
+              <Link to="/auth/login">Sign In</Link>
+            </Button>
+            <Button asChild>
+              <Link to="/auth/register">Create Account</Link>
+            </Button>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
       <div className="flex justify-between items-center">
@@ -62,6 +84,8 @@ export const DashboardView: React.FC = () => {
           {error.message}
         </div>
       )}
+
+      {renderAuthPrompt()}
 
       <div className="grid gap-6 md:grid-cols-2">
         <PeriodSummary
@@ -97,7 +121,7 @@ export const DashboardView: React.FC = () => {
             </div>
           ) : dashboardData.recentExpenses.length === 0 ? (
             <div className="text-center py-6 text-muted-foreground">
-              No expenses yet. Add your first expense!
+              {isAuthenticated ? 'No expenses yet. Add your first expense!' : 'Sign in to start tracking your expenses!'}
             </div>
           ) : (
             <div className="space-y-3">
@@ -199,14 +223,16 @@ export const DashboardView: React.FC = () => {
         </div>
       )}
 
-      <Button
-        className="fixed right-6 bottom-6 shadow-lg"
-        size="lg"
-        onClick={openModal}
-      >
-        <Plus className="w-5 h-5 mr-2" />
-        Add Expense
-      </Button>
+      {isAuthenticated && (
+        <Button
+          className="fixed right-6 bottom-6 shadow-lg"
+          size="lg"
+          onClick={openModal}
+        >
+          <Plus className="w-5 h-5 mr-2" />
+          Add Expense
+        </Button>
+      )}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import { FormField } from './FormField';
 import { Link } from 'react-router-dom';
+import { SocialAuthButtons } from './SocialAuthButtons';
 
 interface RegisterFormProps {
     onSubmit: (data: { fullName: string; email: string; password: string }) => Promise<void>;
@@ -190,7 +191,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
             </div>
 
             {error && (
-                <div className="text-sm text-destructive">
+                <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20 text-sm text-destructive">
                     {error}
                 </div>
             )}
@@ -200,8 +201,21 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
                 className="w-full"
                 disabled={isLoading || Object.keys(validationErrors).length > 0}
             >
-                {isLoading ? 'Creating account...' : 'Create account'}
+                {isLoading ? 'Creating account...' : 'Create account with Email'}
             </Button>
+
+            <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t"></div>
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">
+                        Or continue with
+                    </span>
+                </div>
+            </div>
+
+            <SocialAuthButtons isLoading={isLoading} />
 
             <div className="text-sm text-center text-muted-foreground">
                 Already have an account?{' '}

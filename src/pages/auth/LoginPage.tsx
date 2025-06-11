@@ -3,6 +3,8 @@ import { AuthLayout } from '../../layouts/AuthLayout';
 import { LoginForm } from '../../components/auth/LoginForm';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../../db/supabase.client';
+import { useAppDispatch } from '../../store/hooks';
+import { setError, setUser } from '../../store/authSlice';
 
 interface LocationState {
     message?: string;
@@ -11,21 +13,27 @@ interface LocationState {
 export const LoginPage: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
     const { message } = (location.state as LocationState) || {};
 
     const handleLogin = async (data: { email: string; password: string }) => {
-        const { data: authData, error } = await supabase.auth.signInWithPassword({
-            email: data.email,
-            password: data.password,
-        });
+        try {
+            const { data: authData, error } = await supabase.auth.signInWithPassword({
+                email: data.email,
+                password: data.password,
+            });
 
-        if (error) {
-            throw error;
-        }
+            if (error) {
+                dispatch(setError(error.message));
+                throw error;
+            }
 
-        if (authData.user) {
-            // Login successful, redirect to dashboard
-            navigate('/dashboard');
+            if (authData.user) {
+                dispatch(setUser(authData.user));
+                navigate('/');
+            }
+        } catch (err) {
+            throw err;
         }
     };
 
