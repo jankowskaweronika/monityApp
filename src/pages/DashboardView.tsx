@@ -71,11 +71,11 @@ export const DashboardView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 py-8">
-      <div className="container max-w-7xl mx-auto px-4 space-y-8">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <Button onClick={refreshData} variant="outline" disabled={loadingState.summary}>
+    <div className="min-h-screen bg-muted/30 py-10">
+      <div className="container max-w-5xl mx-auto px-4 space-y-10">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-2">
+          <h1 className="text-4xl font-extrabold tracking-tight text-primary">Dashboard</h1>
+          <Button onClick={refreshData} variant="outline" disabled={loadingState.summary} className="w-full md:w-auto">
             Refresh
           </Button>
         </div>
@@ -89,30 +89,36 @@ export const DashboardView: React.FC = () => {
         {renderAuthPrompt()}
 
         <div className="grid gap-8 md:grid-cols-2">
-          <PeriodSummary
-            currentPeriod={dashboardData.currentPeriod}
-            totalAmount={dashboardData.summary.total_amount}
-            categoryBreakdown={dashboardData.summary.category_breakdown}
-            isLoading={loadingState.summary}
-            selectedPeriod={selectedPeriod}
-            onPeriodChange={changePeriod}
-          />
-
-          <Card>
-            <CardContent className="p-6">
-              <h2 className="text-xl font-semibold mb-6">Expenses Distribution</h2>
-              <ExpensesChart
-                categoryBreakdown={dashboardData.summary.category_breakdown}
+          <Card className="shadow-md">
+            <CardContent className="p-8">
+              <PeriodSummary
+                currentPeriod={dashboardData.currentPeriod}
                 totalAmount={dashboardData.summary.total_amount}
+                categoryBreakdown={dashboardData.summary.category_breakdown}
+                isLoading={loadingState.summary}
+                selectedPeriod={selectedPeriod}
+                onPeriodChange={changePeriod}
               />
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-md flex flex-col justify-center">
+            <CardContent className="p-8 flex flex-col items-center">
+              <h2 className="text-2xl font-semibold mb-6 text-center">Expenses Distribution</h2>
+              <div className="flex flex-col items-center w-full">
+                <ExpensesChart
+                  categoryBreakdown={dashboardData.summary.category_breakdown}
+                  totalAmount={dashboardData.summary.total_amount}
+                />
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold">Recent Expenses</h2>
+        <Card className="shadow-md">
+          <CardContent className="p-8">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
+              <h2 className="text-2xl font-semibold">Recent Expenses</h2>
             </div>
 
             {loadingState.expenses ? (
@@ -130,7 +136,7 @@ export const DashboardView: React.FC = () => {
                 {dashboardData.recentExpenses.map((expense) => (
                   <div
                     key={expense.id}
-                    className="flex items-center justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
+                    className="flex items-center justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors shadow-sm"
                   >
                     <div className="flex items-center gap-4">
                       <div
@@ -157,9 +163,9 @@ export const DashboardView: React.FC = () => {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-card p-6 rounded-xl shadow-lg max-w-md w-full border">
-            <h2 className="text-xl font-semibold mb-6">Add New Expense</h2>
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-card p-8 rounded-xl shadow-lg max-w-md w-full border">
+            <h2 className="text-2xl font-semibold mb-6">Add New Expense</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label htmlFor="amount" className="block text-sm font-medium mb-2 text-muted-foreground">Amount</label>
@@ -202,25 +208,9 @@ export const DashboardView: React.FC = () => {
                   required
                 />
               </div>
-              <div>
-                <label htmlFor="description" className="block text-sm font-medium mb-2 text-muted-foreground">Description</label>
-                <input
-                  type="text"
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  className="w-full p-2 rounded-md border bg-background shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                  placeholder="Enter expense description"
-                  required
-                />
-              </div>
-              <div className="flex justify-end gap-3 mt-6">
-                <Button type="button" variant="outline" onClick={closeModal}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={loadingState.addingExpense}>
-                  {loadingState.addingExpense ? 'Adding...' : 'Add Expense'}
-                </Button>
+              <div className="flex justify-end gap-2 pt-2">
+                <Button type="button" variant="outline" onClick={closeModal}>Cancel</Button>
+                <Button type="submit">Add Expense</Button>
               </div>
             </form>
           </div>
