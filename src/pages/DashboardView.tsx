@@ -71,113 +71,116 @@ export const DashboardView: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <Button onClick={refreshData} variant="outline" disabled={loadingState.summary}>
-          Refresh
-        </Button>
-      </div>
-
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-          {error.message}
+    <div className="min-h-screen bg-muted/30 py-8">
+      <div className="container max-w-7xl mx-auto px-4 space-y-8">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <Button onClick={refreshData} variant="outline" disabled={loadingState.summary}>
+            Refresh
+          </Button>
         </div>
-      )}
 
-      {renderAuthPrompt()}
+        {error && (
+          <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg">
+            {error.message}
+          </div>
+        )}
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <PeriodSummary
-          currentPeriod={dashboardData.currentPeriod}
-          totalAmount={dashboardData.summary.total_amount}
-          categoryBreakdown={dashboardData.summary.category_breakdown}
-          isLoading={loadingState.summary}
-          selectedPeriod={selectedPeriod}
-          onPeriodChange={changePeriod}
-        />
+        {renderAuthPrompt()}
+
+        <div className="grid gap-8 md:grid-cols-2">
+          <PeriodSummary
+            currentPeriod={dashboardData.currentPeriod}
+            totalAmount={dashboardData.summary.total_amount}
+            categoryBreakdown={dashboardData.summary.category_breakdown}
+            isLoading={loadingState.summary}
+            selectedPeriod={selectedPeriod}
+            onPeriodChange={changePeriod}
+          />
+
+          <Card>
+            <CardContent className="p-6">
+              <h2 className="text-xl font-semibold mb-6">Expenses Distribution</h2>
+              <ExpensesChart
+                categoryBreakdown={dashboardData.summary.category_breakdown}
+                totalAmount={dashboardData.summary.total_amount}
+              />
+            </CardContent>
+          </Card>
+        </div>
 
         <Card>
           <CardContent className="p-6">
-            <ExpensesChart
-              categoryBreakdown={dashboardData.summary.category_breakdown}
-              totalAmount={dashboardData.summary.total_amount}
-            />
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold">Recent Expenses</h2>
+            </div>
+
+            {loadingState.expenses ? (
+              <div className="animate-pulse space-y-4">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="h-16 bg-muted rounded-lg" />
+                ))}
+              </div>
+            ) : dashboardData.recentExpenses.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                {isAuthenticated ? 'No expenses yet. Add your first expense!' : 'Sign in to start tracking your expenses!'}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {dashboardData.recentExpenses.map((expense) => (
+                  <div
+                    key={expense.id}
+                    className="flex items-center justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div
+                        className="w-3 h-3 rounded-full ring-2 ring-background"
+                        style={{ backgroundColor: expense.category.color }}
+                      />
+                      <div>
+                        <div className="font-medium">{expense.description || 'No description'}</div>
+                        <div className="text-sm text-muted-foreground">{expense.category.name}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium">{new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' }).format(expense.amount)}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {new Date(expense.date).toLocaleDateString('pl-PL')}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
 
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Recent Expenses</h2>
-          </div>
-
-          {loadingState.expenses ? (
-            <div className="animate-pulse space-y-3">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-12 bg-muted rounded" />
-              ))}
-            </div>
-          ) : dashboardData.recentExpenses.length === 0 ? (
-            <div className="text-center py-6 text-muted-foreground">
-              {isAuthenticated ? 'No expenses yet. Add your first expense!' : 'Sign in to start tracking your expenses!'}
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {dashboardData.recentExpenses.map((expense) => (
-                <div
-                  key={expense.id}
-                  className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: expense.category.color }}
-                    />
-                    <div>
-                      <div className="font-medium">{expense.description || 'No description'}</div>
-                      <div className="text-sm text-muted-foreground">{expense.category.name}</div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-medium">{new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' }).format(expense.amount)}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {new Date(expense.date).toLocaleDateString('pl-PL')}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-          <div className="bg-background p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h2 className="text-xl font-semibold mb-4">Add New Expense</h2>
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-card p-6 rounded-xl shadow-lg max-w-md w-full border">
+            <h2 className="text-xl font-semibold mb-6">Add New Expense</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="amount" className="block text-sm font-medium mb-1">Amount</label>
+                <label htmlFor="amount" className="block text-sm font-medium mb-2 text-muted-foreground">Amount</label>
                 <input
                   type="number"
                   id="amount"
                   value={formData.amount}
                   onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 rounded-md border bg-background shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   required
                   step="0.01"
                   min="0"
                 />
               </div>
               <div>
-                <label htmlFor="category" className="block text-sm font-medium mb-1">Category</label>
+                <label htmlFor="category" className="block text-sm font-medium mb-2 text-muted-foreground">Category</label>
                 <select
                   id="category"
                   value={formData.categoryId}
                   onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 rounded-md border bg-background shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   required
                 >
                   <option value="">Select a category</option>
@@ -189,24 +192,25 @@ export const DashboardView: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label htmlFor="date" className="block text-sm font-medium mb-1">Date</label>
+                <label htmlFor="date" className="block text-sm font-medium mb-2 text-muted-foreground">Date</label>
                 <input
                   type="date"
                   id="date"
                   value={formData.date}
                   onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 rounded-md border bg-background shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   required
                 />
               </div>
               <div>
-                <label htmlFor="description" className="block text-sm font-medium mb-1">Description</label>
+                <label htmlFor="description" className="block text-sm font-medium mb-2 text-muted-foreground">Description</label>
                 <input
                   type="text"
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 rounded-md border bg-background shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  placeholder="Enter expense description"
                   required
                 />
               </div>

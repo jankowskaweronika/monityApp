@@ -17,9 +17,10 @@ export const ExpensesChart: React.FC<ExpensesChartProps> = ({ categoryBreakdown,
             {
                 data: categoryBreakdown.map(cat => cat.amount),
                 backgroundColor: categoryBreakdown.map(cat => cat.category_color),
-                borderColor: 'white',
+                borderColor: 'rgb(var(--background))',
                 borderWidth: 2,
-                hoverOffset: 4
+                hoverOffset: 8,
+                borderRadius: 4
             },
         ],
     };
@@ -34,9 +35,25 @@ export const ExpensesChart: React.FC<ExpensesChartProps> = ({ categoryBreakdown,
                     usePointStyle: true,
                     pointStyle: 'circle',
                     padding: 20,
+                    font: {
+                        size: 12,
+                        family: 'inherit'
+                    },
+                    color: 'rgb(var(--foreground))'
                 }
             },
             tooltip: {
+                backgroundColor: 'rgb(var(--card))',
+                titleColor: 'rgb(var(--foreground))',
+                bodyColor: 'rgb(var(--foreground))',
+                bodyFont: {
+                    size: 12,
+                    family: 'inherit'
+                },
+                padding: 12,
+                boxPadding: 6,
+                borderColor: 'rgb(var(--border))',
+                borderWidth: 1,
                 callbacks: {
                     label: (context: any) => {
                         const value = context.raw;
@@ -49,17 +66,17 @@ export const ExpensesChart: React.FC<ExpensesChartProps> = ({ categoryBreakdown,
                 },
             },
         },
-        cutout: '70%',
+        cutout: '75%',
     };
 
     return (
-        <div className="w-full relative">
-            <div className="h-[300px]">
+        <div className="relative h-[300px]">
+            <div className="absolute inset-0">
                 <Doughnut data={data} options={options} />
             </div>
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                <div className="text-sm text-muted-foreground">Total</div>
-                <div className="text-2xl font-bold">
+                <div className="text-sm text-muted-foreground font-medium">Total</div>
+                <div className="text-2xl font-bold tracking-tight">
                     {new Intl.NumberFormat('pl-PL', {
                         style: 'currency',
                         currency: 'PLN'

@@ -63,7 +63,7 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
 
   return (
     <Card>
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold">Period Summary</CardTitle>
           <div className="relative">
@@ -78,7 +78,7 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
             </Button>
 
             {isDropdownOpen && (
-              <div className="absolute right-0 top-full mt-1 w-40 rounded-md bg-background border shadow-lg z-10">
+              <div className="absolute right-0 top-full mt-2 w-40 rounded-lg bg-card border shadow-lg z-10">
                 {PERIOD_OPTIONS.map((option) => (
                   <button
                     key={option.id}
@@ -86,8 +86,8 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
                       onPeriodChange(option.id);
                       setIsDropdownOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors
-                                            ${option.id === selectedPeriod ? 'bg-muted font-medium' : ''}`}
+                    className={`w-full text-left px-4 py-2.5 text-sm hover:bg-muted transition-colors first:rounded-t-lg last:rounded-b-lg
+                      ${option.id === selectedPeriod ? 'bg-muted font-medium' : ''}`}
                   >
                     {option.name}
                   </button>
@@ -100,22 +100,22 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
 
       <CardContent>
         {isLoading ? (
-          <div className="space-y-3">
-            <div className="h-8 bg-muted rounded animate-pulse" />
-            <div className="h-4 bg-muted rounded w-2/3 animate-pulse" />
-            <div className="h-4 bg-muted rounded w-1/2 animate-pulse" />
+          <div className="space-y-4">
+            <div className="h-10 bg-muted rounded-lg animate-pulse" />
+            <div className="h-4 bg-muted rounded-lg w-2/3 animate-pulse" />
+            <div className="h-4 bg-muted rounded-lg w-1/2 animate-pulse" />
           </div>
         ) : (
           <>
-            <div className="space-y-1">
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold">
+            <div className="space-y-2">
+              <div className="flex items-baseline gap-3">
+                <span className="text-4xl font-bold tracking-tight">
                   {formatCurrency(totalAmount)}
                 </span>
                 {trendDirection && changePercentage !== undefined && (
-                  <div className={`flex items-center gap-1 text-sm ${trendDirection === 'up' ? 'text-red-500' :
-                    trendDirection === 'down' ? 'text-green-500' :
-                      'text-muted-foreground'}`}
+                  <div className={`flex items-center gap-1.5 text-sm font-medium ${trendDirection === 'up' ? 'text-red-500' :
+                      trendDirection === 'down' ? 'text-green-500' :
+                        'text-muted-foreground'}`}
                   >
                     {trendDirection === 'up' && <TrendingUp className="h-4 w-4" />}
                     {trendDirection === 'down' && <TrendingDown className="h-4 w-4" />}
@@ -129,41 +129,41 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mt-4 py-4 border-y">
+            <div className="grid grid-cols-2 gap-6 my-6 py-6 border-y">
               <div>
-                <p className="text-sm text-muted-foreground">Categories</p>
-                <p className="text-lg font-semibold">{categoryBreakdown.length}</p>
+                <p className="text-sm text-muted-foreground font-medium mb-1">Categories</p>
+                <p className="text-2xl font-bold tracking-tight">{categoryBreakdown.length}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Avg. per day</p>
-                <p className="text-lg font-semibold">
+                <p className="text-sm text-muted-foreground font-medium mb-1">Avg. per day</p>
+                <p className="text-2xl font-bold tracking-tight">
                   {formatCurrency(totalAmount / 30)}
                 </p>
               </div>
             </div>
 
             {categoryBreakdown.length > 0 && (
-              <div className="mt-4">
+              <div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowDetails(!showDetails)}
-                  className="w-full justify-between p-0 h-auto font-normal hover:bg-transparent"
+                  className="w-full justify-between px-0 h-auto font-medium hover:bg-transparent"
                 >
-                  <span className="text-sm text-muted-foreground">Category breakdown</span>
+                  <span className="text-sm font-medium">Category breakdown</span>
                   <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${showDetails ? 'rotate-180' : ''}`} />
                 </Button>
 
                 {showDetails && (
-                  <div className="mt-3 space-y-2">
+                  <div className="mt-4 space-y-3">
                     {categoryBreakdown
                       .sort((a, b) => b.amount - a.amount)
                       .slice(0, 5)
                       .map((category) => (
                         <div key={category.category_id} className="flex items-center justify-between py-1">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-3">
                             <div
-                              className="w-3 h-3 rounded-full"
+                              className="w-3 h-3 rounded-full ring-2 ring-background"
                               style={{ backgroundColor: category.category_color }}
                             />
                             <span className="text-sm">{category.category_name}</span>
@@ -173,7 +173,7 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
                               {formatCurrency(category.amount)}
                             </div>
                             <div className="text-xs text-muted-foreground">
-                              {category.percentage.toFixed(1)}%
+                              {((category.amount / totalAmount) * 100).toFixed(1)}%
                             </div>
                           </div>
                         </div>
