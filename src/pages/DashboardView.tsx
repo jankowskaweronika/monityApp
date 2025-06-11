@@ -7,6 +7,7 @@ import { Plus } from 'lucide-react';
 import { useDashboardData } from '../hooks/useDashboardData';
 import { useAppSelector } from '../store/hooks';
 import { Link } from 'react-router-dom';
+import { SocialAuthButtons } from '../components/auth/SocialAuthButtons';
 
 export const DashboardView: React.FC = () => {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
@@ -52,21 +53,6 @@ export const DashboardView: React.FC = () => {
   };
 
   const renderAuthPrompt = () => {
-    if (!isAuthenticated && !loadingState.summary && !dashboardData.recentExpenses.length) {
-      return (
-        <div className="text-center py-6 space-y-4">
-          <p className="text-muted-foreground">Sign in to start tracking your expenses!</p>
-          <div className="space-x-4">
-            <Button variant="outline" asChild>
-              <Link to="/auth/login">Sign In</Link>
-            </Button>
-            <Button asChild>
-              <Link to="/auth/register">Create Account</Link>
-            </Button>
-          </div>
-        </div>
-      );
-    }
     return null;
   };
 
@@ -86,7 +72,21 @@ export const DashboardView: React.FC = () => {
           </div>
         )}
 
-        {renderAuthPrompt()}
+        {!isAuthenticated && (
+          <div className="bg-muted/50 border rounded-lg p-4 text-center">
+            <p className="text-muted-foreground">
+              Sign in to start tracking your expenses! You can still browse the dashboard.
+            </p>
+            <div className="mt-2 space-x-4">
+              <Button variant="outline" asChild size="sm">
+                <Link to="/auth/login">Sign In</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link to="/auth/register">Create Account</Link>
+              </Button>
+            </div>
+          </div>
+        )}
 
         <div className="grid gap-8 md:grid-cols-2">
           <Card className="shadow-md">
@@ -129,7 +129,7 @@ export const DashboardView: React.FC = () => {
               </div>
             ) : dashboardData.recentExpenses.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
-                {isAuthenticated ? 'No expenses yet. Add your first expense!' : 'Sign in to start tracking your expenses!'}
+                {isAuthenticated ? 'No expenses yet. Add your first expense!' : 'No expenses yet. Sign in to start tracking!'}
               </div>
             ) : (
               <div className="space-y-4">
@@ -162,7 +162,7 @@ export const DashboardView: React.FC = () => {
         </Card>
       </div>
 
-      {isModalOpen && (
+      {isModalOpen && isAuthenticated && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-card p-8 rounded-xl shadow-lg max-w-md w-full border">
             <h2 className="text-2xl font-semibold mb-6">Add New Expense</h2>
@@ -217,16 +217,16 @@ export const DashboardView: React.FC = () => {
         </div>
       )}
 
-      {isAuthenticated && (
-        <Button
-          className="fixed right-6 bottom-6 shadow-lg"
-          size="lg"
-          onClick={openModal}
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Add Expense
-        </Button>
-      )}
+      <Button
+        className="fixed right-6 bottom-6 shadow-lg"
+        size="lg"
+        onClick={openModal}
+        disabled={!isAuthenticated}
+        title={!isAuthenticated ? "Sign in to add expenses" : "Add new expense"}
+      >
+        <Plus className="w-5 h-5 mr-2" />
+        Add Expense
+      </Button>
     </div>
   );
 };
