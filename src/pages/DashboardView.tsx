@@ -8,6 +8,7 @@ import { useDashboardData } from '../hooks/useDashboardData';
 import { useAppSelector } from '../store/hooks';
 import { Link } from 'react-router-dom';
 import { SocialAuthButtons } from '../components/auth/SocialAuthButtons';
+import { Navbar } from '../components/layout/Navbar';
 
 export const DashboardView: React.FC = () => {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
@@ -57,109 +58,112 @@ export const DashboardView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 py-10">
-      <div className="container max-w-5xl mx-auto px-4 space-y-10">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-2">
-          <h1 className="text-4xl font-extrabold tracking-tight text-primary">Dashboard</h1>
-          <Button onClick={refreshData} variant="outline" disabled={loadingState.summary} className="w-full md:w-auto">
-            Refresh
-          </Button>
-        </div>
-
-        {error && (
-          <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg">
-            {error.message}
+    <div className="min-h-screen bg-muted/30">
+      <Navbar />
+      <div className="py-10">
+        <div className="container max-w-5xl mx-auto px-4 space-y-10">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-2">
+            <h1 className="text-4xl font-extrabold tracking-tight text-primary">Dashboard</h1>
+            <Button onClick={refreshData} variant="outline" disabled={loadingState.summary} className="w-full md:w-auto">
+              Refresh
+            </Button>
           </div>
-        )}
 
-        {!isAuthenticated && (
-          <div className="bg-muted/50 border rounded-lg p-4 text-center">
-            <p className="text-muted-foreground">
-              Sign in to start tracking your expenses! You can still browse the dashboard.
-            </p>
-            <div className="mt-2 space-x-4">
-              <Button variant="outline" asChild size="sm">
-                <Link to="/auth/login">Sign In</Link>
-              </Button>
-              <Button asChild size="sm">
-                <Link to="/auth/register">Create Account</Link>
-              </Button>
+          {error && (
+            <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-lg">
+              {error.message}
             </div>
-          </div>
-        )}
+          )}
 
-        <div className="grid gap-8 md:grid-cols-2">
+          {!isAuthenticated && (
+            <div className="bg-muted/50 border rounded-lg p-4 text-center">
+              <p className="text-muted-foreground">
+                Sign in to start tracking your expenses! You can still browse the dashboard.
+              </p>
+              <div className="mt-2 space-x-4">
+                <Button variant="outline" asChild size="sm">
+                  <Link to="/auth/login">Sign In</Link>
+                </Button>
+                <Button asChild size="sm">
+                  <Link to="/auth/register">Create Account</Link>
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <div className="grid gap-8 md:grid-cols-2">
+            <Card className="shadow-md">
+              <CardContent className="p-8">
+                <PeriodSummary
+                  currentPeriod={dashboardData.currentPeriod}
+                  totalAmount={dashboardData.summary.total_amount}
+                  categoryBreakdown={dashboardData.summary.category_breakdown}
+                  isLoading={loadingState.summary}
+                  selectedPeriod={selectedPeriod}
+                  onPeriodChange={changePeriod}
+                />
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-md flex flex-col justify-center">
+              <CardContent className="p-8 flex flex-col items-center">
+                <h2 className="text-2xl font-semibold mb-6 text-center">Expenses Distribution</h2>
+                <div className="flex flex-col items-center w-full">
+                  <ExpensesChart
+                    categoryBreakdown={dashboardData.summary.category_breakdown}
+                    totalAmount={dashboardData.summary.total_amount}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           <Card className="shadow-md">
             <CardContent className="p-8">
-              <PeriodSummary
-                currentPeriod={dashboardData.currentPeriod}
-                totalAmount={dashboardData.summary.total_amount}
-                categoryBreakdown={dashboardData.summary.category_breakdown}
-                isLoading={loadingState.summary}
-                selectedPeriod={selectedPeriod}
-                onPeriodChange={changePeriod}
-              />
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-md flex flex-col justify-center">
-            <CardContent className="p-8 flex flex-col items-center">
-              <h2 className="text-2xl font-semibold mb-6 text-center">Expenses Distribution</h2>
-              <div className="flex flex-col items-center w-full">
-                <ExpensesChart
-                  categoryBreakdown={dashboardData.summary.category_breakdown}
-                  totalAmount={dashboardData.summary.total_amount}
-                />
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
+                <h2 className="text-2xl font-semibold">Recent Expenses</h2>
               </div>
+
+              {loadingState.expenses ? (
+                <div className="animate-pulse space-y-4">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="h-16 bg-muted rounded-lg" />
+                  ))}
+                </div>
+              ) : dashboardData.recentExpenses.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  {isAuthenticated ? 'No expenses yet. Add your first expense!' : 'No expenses yet. Sign in to start tracking!'}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {dashboardData.recentExpenses.map((expense) => (
+                    <div
+                      key={expense.id}
+                      className="flex items-center justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors shadow-sm"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div
+                          className="w-3 h-3 rounded-full ring-2 ring-background"
+                          style={{ backgroundColor: expense.category.color }}
+                        />
+                        <div>
+                          <div className="font-medium">{expense.description || 'No description'}</div>
+                          <div className="text-sm text-muted-foreground">{expense.category.name}</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-medium">{new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' }).format(expense.amount)}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {new Date(expense.date).toLocaleDateString('pl-PL')}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
-
-        <Card className="shadow-md">
-          <CardContent className="p-8">
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
-              <h2 className="text-2xl font-semibold">Recent Expenses</h2>
-            </div>
-
-            {loadingState.expenses ? (
-              <div className="animate-pulse space-y-4">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-16 bg-muted rounded-lg" />
-                ))}
-              </div>
-            ) : dashboardData.recentExpenses.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                {isAuthenticated ? 'No expenses yet. Add your first expense!' : 'No expenses yet. Sign in to start tracking!'}
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {dashboardData.recentExpenses.map((expense) => (
-                  <div
-                    key={expense.id}
-                    className="flex items-center justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors shadow-sm"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div
-                        className="w-3 h-3 rounded-full ring-2 ring-background"
-                        style={{ backgroundColor: expense.category.color }}
-                      />
-                      <div>
-                        <div className="font-medium">{expense.description || 'No description'}</div>
-                        <div className="text-sm text-muted-foreground">{expense.category.name}</div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-medium">{new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' }).format(expense.amount)}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {new Date(expense.date).toLocaleDateString('pl-PL')}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
       </div>
 
       {isModalOpen && isAuthenticated && (
