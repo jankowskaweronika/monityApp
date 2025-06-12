@@ -47,8 +47,6 @@ MonityApp oferuje:
 ### 3.1 Uwierzytelnianie
 
 - Rejestracja za pomocą adresu email
-- Logowanie przez Google
-- Logowanie przez Facebook
 - Resetowanie hasła przez email
 
 ### 3.2 Zarządzanie wydatkami
@@ -110,8 +108,6 @@ MonityApp oferuje:
 Kryteria akceptacji:
 
 - Użytkownik może zarejestrować się przez email
-- Użytkownik może zarejestrować się przez Google
-- Użytkownik może zarejestrować się przez Facebook
 - Wymagane są: imię, nazwisko, email
 
 #### US-002: Logowanie użytkownika
@@ -123,8 +119,6 @@ Kryteria akceptacji:
 Kryteria akceptacji:
 
 - Użytkownik może zalogować się przez email
-- Użytkownik może zalogować się przez Google
-- Użytkownik może zalogować się przez Facebook
 - Resetowanie hasła jest możliwe przez email
 
 ### Zarządzanie wydatkami

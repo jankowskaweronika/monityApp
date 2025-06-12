@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import { FormField } from './FormField';
 import { Link } from 'react-router-dom';
-import { SocialAuthButtons } from './SocialAuthButtons';
 
 interface RegisterFormProps {
     onSubmit: (data: { fullName: string; email: string; password: string }) => Promise<void>;
@@ -176,8 +175,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
                             <li
                                 key={req.message}
                                 className={`flex items-center gap-1.5 ${passwordRequirements[index]
-                                        ? 'text-green-600 dark:text-green-400'
-                                        : 'text-muted-foreground'
+                                    ? 'text-green-600 dark:text-green-400'
+                                    : 'text-muted-foreground'
                                     }`}
                             >
                                 <span className="text-xs">
@@ -215,7 +214,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
                 </div>
             </div>
 
-            <SocialAuthButtons isLoading={isLoading} />
 
             <div className="text-sm text-center text-muted-foreground">
                 Already have an account?{' '}

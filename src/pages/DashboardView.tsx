@@ -7,7 +7,6 @@ import { Plus } from 'lucide-react';
 import { useDashboardData } from '../hooks/useDashboardData';
 import { useAppSelector } from '../store/hooks';
 import { Link } from 'react-router-dom';
-import { SocialAuthButtons } from '../components/auth/SocialAuthButtons';
 import { Navbar } from '../components/layout/Navbar';
 
 export const DashboardView: React.FC = () => {

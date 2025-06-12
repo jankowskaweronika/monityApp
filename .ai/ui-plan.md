@@ -15,7 +15,6 @@ MonityApp została zaprojektowana jako jednostronicowa aplikacja (SPA) z podejś
 - **Kluczowe informacje**: Formularz logowania, opcje społecznościowe, link do rejestracji
 - **Kluczowe komponenty**:
   - EmailPasswordForm
-  - SocialAuthButtons (Google, Facebook)
   - ForgotPasswordLink
   - RegisterRedirect
 - **UX/Accessibility/Security**: Focus trap w formularzu, walidacja w czasie rzeczywistym, secure token handling, ARIA labels dla screen readers
@@ -27,7 +26,6 @@ MonityApp została zaprojektowana jako jednostronicowa aplikacja (SPA) z podejś
 - **Kluczowe informacje**: Formularz rejestracji z wymaganymi polami
 - **Kluczowe komponenty**:
   - RegistrationForm (imię, nazwisko, email, hasło)
-  - SocialAuthButtons
   - LoginRedirect
 - **UX/Accessibility/Security**: Progressive enhancement, password strength indicator, input validation, secure form submission
 
@@ -162,7 +160,7 @@ MonityApp została zaprojektowana jako jednostronicowa aplikacja (SPA) z podejś
 ### 3.1 Pierwszy visit (niezalogowany użytkownik)
 
 1. **Wejście do aplikacji** → Redirect na `/login`
-2. **Wybór opcji logowania** → Email/hasło lub social auth
+2. **Wybór opcji logowania** → Email/hasło
 3. **Jeśli nowy użytkownik** → Przejście do `/register`
 4. **Po rejestracji/logowaniu** → Redirect na Dashboard `/`
 

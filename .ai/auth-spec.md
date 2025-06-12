@@ -25,7 +25,6 @@ src/
       LoginForm.tsx            // Formularz logowania
       RegisterForm.tsx         // Formularz rejestracji
       ResetPasswordForm.tsx    // Formularz resetowania hasła
-      SocialAuthButtons.tsx    // Przyciski logowania przez Google/Facebook
     ui/
       AuthCard.tsx            // Kontener dla formularzy auth
 ```
@@ -40,7 +39,6 @@ src/
   - Hasło (wymagane, min. 8 znaków, duża litera, cyfra)
   - Potwierdzenie hasła (musi być zgodne z hasłem)
 - Walidacja w czasie rzeczywistym
-- Przyciski social login
 - Link do logowania
 
 #### 1.3.2 Formularz logowania
@@ -49,7 +47,6 @@ src/
   - Email (wymagane, format email)
   - Hasło (wymagane)
 - Link do resetowania hasła
-- Przyciski social login
 - Link do rejestracji
 
 #### 1.3.3 Formularz resetowania hasła
@@ -136,43 +133,27 @@ interface ConfirmResetCommand {
 
 ## 3. System autentykacji
 
-### 3.1 Konfiguracja Supabase Auth
-
-// Konfiguracja providerów
-const authConfig = {
-providers: ['google', 'facebook'],
-redirectTo: `${window.location.origin}/auth/callback`,
-emailRedirectTo: `${window.location.origin}/auth/verify`,
-}
-
 ```
-
-### 3.2 Zarządzanie sesją
+### 3.1 Zarządzanie sesją
 - Automatyczne odświeżanie tokenów
 - Persystencja sesji w localStorage
 - Obsługa wygaśnięcia sesji
 
-### 3.3 Zabezpieczenia
+### 3.2 Zabezpieczenia
 - CSRF tokens dla formularzy
 - Rate limiting dla prób logowania
 - Walidacja siły hasła
 - Captcha dla formularzy
 
-### 3.4 Przepływy autentykacji
+### 3.3 Przepływy autentykacji
 
-#### 3.4.1 Email/Hasło
+#### 3.3.1 Email/Hasło
 1. Walidacja formularza
 2. Wysłanie żądania do Supabase Auth
 3. Obsługa odpowiedzi/błędów
 4. Przekierowanie do aplikacji
 
-#### 3.4.2 Social Auth
-1. Przekierowanie do providera
-2. Obsługa callback URL
-3. Walidacja tokena
-4. Utworzenie/aktualizacja profilu
-
-#### 3.4.3 Reset hasła
+#### 3.3.2 Reset hasła
 1. Żądanie resetu (email)
 2. Wysłanie maila z linkiem
 3. Walidacja tokena

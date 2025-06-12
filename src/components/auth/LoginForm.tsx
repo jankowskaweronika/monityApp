@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import { FormField } from './FormField';
 import { Link } from 'react-router-dom';
-import { SocialAuthButtons } from './SocialAuthButtons';
 
 interface LoginFormProps {
     onSubmit: (data: { email: string; password: string }) => Promise<void>;
@@ -137,8 +136,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                     </span>
                 </div>
             </div>
-
-            <SocialAuthButtons isLoading={isLoading} />
 
             <div className="text-sm text-center text-muted-foreground">
                 Don't have an account?{' '}
