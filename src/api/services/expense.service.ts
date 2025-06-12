@@ -89,13 +89,21 @@ export class ExpenseService {
   async createExpense(command: CreateExpenseCommand) {
     const validatedData = createExpenseSchema.parse(command);
     
-    // During development, we don't require user_id
+    // Get the current user's ID
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      throw new SupabaseError(
+        'UNAUTHORIZED',
+        'User must be authenticated to create expenses'
+      );
+    }
+    
     const { data, error } = await supabase
       .from('expenses')
       .insert({ 
         ...validatedData,
-        // user_id is optional during development
-        user_id: null 
+        user_id: user.id
       })
       .select(`
         *,
