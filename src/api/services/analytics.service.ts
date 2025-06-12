@@ -66,6 +66,15 @@ export class AnalyticsService {
     const validatedQuery = analyticsQuerySchema.parse(query);
     const period = await this.getPeriodInfo(validatedQuery);
 
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new SupabaseError(
+        'UNAUTHORIZED',
+        'User must be authenticated to get expense summary'
+      );
+    }
+
     const { data, error } = await supabase
       .from('expenses')
       .select(`
@@ -76,6 +85,7 @@ export class AnalyticsService {
           color
         )
       `)
+      .eq('user_id', user.id)
       .gte('date', period.start_date)
       .lte('date', period.end_date);
 

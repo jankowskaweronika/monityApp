@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { logout } from '../../store/slices/authSlice';
+import { logout } from '../../store/authSlice';
 import { Button } from '../ui/button';
 import {
   DropdownMenu,

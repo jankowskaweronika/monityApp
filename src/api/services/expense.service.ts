@@ -36,6 +36,15 @@ export class ExpenseService {
   async listExpenses(query: ListExpensesQuery): Promise<ListExpensesResponse> {
     const validatedQuery = listExpensesQuerySchema.parse(query);
     
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new SupabaseError(
+        'UNAUTHORIZED',
+        'User must be authenticated to list expenses'
+      );
+    }
+
     let supabaseQuery = supabase
       .from('expenses')
       .select(`
@@ -45,7 +54,8 @@ export class ExpenseService {
           name,
           color
         )
-      `, { count: 'exact' });
+      `, { count: 'exact' })
+      .eq('user_id', user.id);
 
     // Apply filters
     if (validatedQuery.start_date) {

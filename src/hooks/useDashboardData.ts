@@ -4,6 +4,7 @@ import { CreateExpenseCommand, ExpenseSummaryResponse, ListExpensesResponse, Lis
 import { ExpenseService } from '../api/services/expense.service';
 import { CategoryService } from '../api/services/category.service';
 import { AnalyticsService } from '../api/services/analytics.service';
+import { useAppSelector } from '../store/hooks';
 
 export interface UseDashboardDataReturn {
   dashboardData: DashboardData;
@@ -24,18 +25,19 @@ const categoryService = new CategoryService();
 const analyticsService = new AnalyticsService();
 
 export const useDashboardData = (): UseDashboardDataReturn => {
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const [selectedPeriod, setSelectedPeriod] = useState<string>('month');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [error, setError] = useState<DashboardError | null>(null);
   
   const [loadingState, setLoadingState] = useState<LoadingState>({
-    summary: true,
-    expenses: true,
-    categories: true,
+    summary: false,
+    expenses: false,
+    categories: false,
     addingExpense: false,
   });
 
-  const [dashboardData, setDashboardData] = useState<DashboardData>({
+  const emptyDashboardData: DashboardData = {
     summary: {
       total_amount: 0,
       category_breakdown: [],
@@ -54,19 +56,24 @@ export const useDashboardData = (): UseDashboardDataReturn => {
       start_date: new Date().toISOString(),
       end_date: new Date().toISOString(),
     },
-    isLoading: true,
+    isLoading: false,
     error: undefined,
-  });
+  };
+
+  const [dashboardData, setDashboardData] = useState<DashboardData>(emptyDashboardData);
 
   // Fetch dashboard summary data
   const fetchSummaryData = useCallback(async () => {
+    if (!isAuthenticated) {
+      setDashboardData(emptyDashboardData);
+      return;
+    }
+
     try {
       setLoadingState(prev => ({ ...prev, summary: true }));
       const summaryResponse: ExpenseSummaryResponse = await analyticsService.getExpenseSummary({
         period: selectedPeriod,
       });
-      
-      console.log('Dashboard summary data:', JSON.stringify(summaryResponse, null, 2));
       
       setDashboardData(prev => ({
         ...prev,
@@ -82,10 +89,15 @@ export const useDashboardData = (): UseDashboardDataReturn => {
     } finally {
       setLoadingState(prev => ({ ...prev, summary: false }));
     }
-  }, [selectedPeriod]);
+  }, [selectedPeriod, isAuthenticated]);
 
   // Fetch recent expenses
   const fetchRecentExpenses = useCallback(async () => {
+    if (!isAuthenticated) {
+      setDashboardData(prev => ({ ...prev, recentExpenses: [] }));
+      return;
+    }
+
     try {
       setLoadingState(prev => ({ ...prev, expenses: true }));
       const expensesResponse: ListExpensesResponse = await expenseService.listExpenses({
@@ -107,10 +119,15 @@ export const useDashboardData = (): UseDashboardDataReturn => {
     } finally {
       setLoadingState(prev => ({ ...prev, expenses: false }));
     }
-  }, []);
+  }, [isAuthenticated]);
 
   // Fetch available categories
   const fetchCategories = useCallback(async () => {
+    if (!isAuthenticated) {
+      setDashboardData(prev => ({ ...prev, availableCategories: [] }));
+      return;
+    }
+
     try {
       setLoadingState(prev => ({ ...prev, categories: true }));
       const categoriesResponse: ListCategoriesResponse = await categoryService.listCategories({
@@ -130,17 +147,22 @@ export const useDashboardData = (): UseDashboardDataReturn => {
     } finally {
       setLoadingState(prev => ({ ...prev, categories: false }));
     }
-  }, []);
+  }, [isAuthenticated]);
 
   // Refresh all data
   const refreshData = useCallback(async () => {
+    if (!isAuthenticated) {
+      setDashboardData(emptyDashboardData);
+      return;
+    }
+
     setError(null);
     await Promise.all([
       fetchSummaryData(),
       fetchRecentExpenses(),
       fetchCategories(),
     ]);
-  }, [fetchSummaryData, fetchRecentExpenses, fetchCategories]);
+  }, [fetchSummaryData, fetchRecentExpenses, fetchCategories, isAuthenticated]);
 
   // Change period handler
   const changePeriod = useCallback((period: string) => {
@@ -158,6 +180,10 @@ export const useDashboardData = (): UseDashboardDataReturn => {
 
   // Add expense with optimistic update
   const addExpense = useCallback(async (data: CreateExpenseCommand) => {
+    if (!isAuthenticated) {
+      throw new Error('You must be logged in to add expenses');
+    }
+
     try {
       setLoadingState(prev => ({ ...prev, addingExpense: true }));
       
@@ -205,17 +231,17 @@ export const useDashboardData = (): UseDashboardDataReturn => {
     } finally {
       setLoadingState(prev => ({ ...prev, addingExpense: false }));
     }
-  }, [dashboardData.availableCategories, fetchSummaryData, fetchRecentExpenses]);
+  }, [dashboardData.availableCategories, fetchSummaryData, fetchRecentExpenses, isAuthenticated]);
 
-  // Initial data load - only run once
+  // Initial data load and auth state change
   useEffect(() => {
     void refreshData();
-  }, []);
+  }, [isAuthenticated]);
 
   // Reload summary when period changes
   useEffect(() => {
     void fetchSummaryData();
-  }, [selectedPeriod]);
+  }, [selectedPeriod, isAuthenticated]);
 
   // Update isLoading flag based on loading states
   const isLoading = loadingState.summary || loadingState.expenses || loadingState.categories;
