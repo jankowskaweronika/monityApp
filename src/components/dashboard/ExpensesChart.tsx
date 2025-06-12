@@ -1,9 +1,23 @@
 import React from 'react';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import {
+    Chart as ChartJS,
+    ArcElement,
+    Tooltip,
+    Legend,
+    CategoryScale,
+    LinearScale
+} from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { CategoryBreakdown } from '../../types/types';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+// Rejestracja wszystkich potrzebnych komponentów
+ChartJS.register(
+    ArcElement,
+    Tooltip,
+    Legend,
+    CategoryScale,
+    LinearScale
+);
 
 interface ExpensesChartProps {
     categoryBreakdown: CategoryBreakdown[];
@@ -11,6 +25,8 @@ interface ExpensesChartProps {
 }
 
 export const ExpensesChart: React.FC<ExpensesChartProps> = ({ categoryBreakdown, totalAmount }) => {
+    console.log('ExpensesChart props:', JSON.stringify({ categoryBreakdown, totalAmount }, null, 2));
+
     const data = {
         labels: categoryBreakdown.map(cat => cat.category_name),
         datasets: [
@@ -28,6 +44,10 @@ export const ExpensesChart: React.FC<ExpensesChartProps> = ({ categoryBreakdown,
     const options = {
         responsive: true,
         maintainAspectRatio: false,
+        animation: {
+            animateScale: true,
+            animateRotate: true
+        },
         plugins: {
             legend: {
                 position: 'right' as const,
@@ -70,19 +90,18 @@ export const ExpensesChart: React.FC<ExpensesChartProps> = ({ categoryBreakdown,
     };
 
     return (
-        <div className="relative h-[300px]">
-            <div className="absolute inset-0">
-                <Doughnut data={data} options={options} />
-            </div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                <div className="text-sm text-muted-foreground font-medium">Total</div>
-                <div className="text-2xl font-bold tracking-tight">
-                    {new Intl.NumberFormat('pl-PL', {
-                        style: 'currency',
-                        currency: 'PLN'
-                    }).format(totalAmount)}
+        <div className="relative h-[300px] w-full">
+            {categoryBreakdown.length > 0 ? (
+                <>
+                    <div className="absolute inset-0">
+                        <Doughnut data={data} options={options} />
+                    </div>
+                </>
+            ) : (
+                <div className="flex items-center justify-center h-full text-muted-foreground">
+                    No data available
                 </div>
-            </div>
+            )}
         </div>
     );
 };

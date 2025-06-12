@@ -66,6 +66,8 @@ export const useDashboardData = (): UseDashboardDataReturn => {
         period: selectedPeriod,
       });
       
+      console.log('Dashboard summary data:', JSON.stringify(summaryResponse, null, 2));
+      
       setDashboardData(prev => ({
         ...prev,
         summary: summaryResponse,
