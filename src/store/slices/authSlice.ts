@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { supabase } from '../../db/supabase.client';
 
 export interface User {
   id: string;
@@ -23,8 +24,10 @@ const initialState: AuthState = {
 export const logout = createAsyncThunk(
   'auth/logout',
   async () => {
-    // Here you would typically call your API to invalidate the session
-    // For now, we'll just clear the local state
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      throw error;
+    }
     return null;
   }
 );

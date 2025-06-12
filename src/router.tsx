@@ -4,6 +4,7 @@ import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { PasswordResetPage } from './pages/auth/PasswordResetPage';
 import { AuthCallbackPage } from './pages/auth/AuthCallbackPage';
+import { SettingsPage } from './pages/SettingsPage';
 import { SessionChecker } from './components/auth/SessionChecker';
 import { useAppSelector } from './store/hooks';
 import { RootState } from './store/store';
@@ -37,6 +38,14 @@ export const router = createBrowserRouter([
       {
         path: '/',
         element: <DashboardView />,
+      },
+      {
+        path: '/settings',
+        element: (
+          <AuthGuard>
+            <SettingsPage />
+          </AuthGuard>
+        ),
       },
       {
         path: '/auth',
