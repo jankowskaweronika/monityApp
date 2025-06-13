@@ -40,16 +40,21 @@ MonityApp is designed to help users systematically track expenses, categorize an
 
 ### Development Tools
 
-- Jest for testing
+- Vitest for testing
 - ESLint for code linting
 - Prettier for code formatting
 - Git for version control
 
 ### Testing
 
-- **Unit Tests**: Jest
-- **Component Tests**: React Testing Library
-- **E2E Tests**: Cypress
+- **Unit Tests**:
+  - Vitest as the main testing framework
+  - React Testing Library for component testing
+- **Component Tests**: React Testing Library with Vitest
+- **E2E Tests**: Playwright for end-to-end testing
+- **Visual Regression Tests**: Storybook with Chromatic
+- **Test Coverage**: Minimum 90% coverage for critical modules
+- **CI/CD Integration**: Automated testing via GitHub Actions
 
 ### CI/CD
 

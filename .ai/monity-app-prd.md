@@ -20,7 +20,7 @@ MonityApp to mobilna i responzyjna aplikacja do zarządzania wydatkami, która u
 - Stan aplikacji: Redux
 - Backend i hosting: Supabase
 - Wizualizacja danych: Recharts
-- Testy: Jest, React Testing Library
+- Testy: React Testing Library
 - CI/CD: GitHub Actions
 
 ## 2. Problem użytkownika

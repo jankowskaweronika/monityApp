@@ -32,11 +32,32 @@ MonityApp to mobilna i responzyjna aplikacja do zarządzania wydatkami, która u
 
 ## 🧪 Testowanie
 
-| Technologia               | Opis                         |
-| ------------------------- | ---------------------------- |
-| **Jest**                  | Testy jednostkowe            |
-| **React Testing Library** | Testowanie komponentów React |
-| **Cypress**               | Testy end-to-end             |
+| Technologia               | Wersja | Opis                                                        |
+| ------------------------- | ------ | ----------------------------------------------------------- |
+| **Vitest**                | TBD    | Główny framework testowy, kompatybilny z API                |
+| **React Testing Library** | TBD    | Biblioteka do testowania komponentów React                  |
+| **Playwright**            | TBD    | Framework do testów end-to-end z obsługą wielu przeglądarek |
+| **Storybook**             | TBD    | Narzędzie do tworzenia i testowania komponentów w izolacji  |
+| **Chromatic**             | TBD    | Platforma do testów wizualnej regresji                      |
+
+### Testy Jednostkowe i Integracyjne
+
+- Vitest jako główny framework testowy
+- React Testing Library do testowania komponentów
+- Mockowanie Supabase dla testów integracyjnych
+- Minimum 90% pokrycia kodu dla modułów krytycznych
+
+### Testy End-to-End
+
+- Playwright do automatyzacji scenariuszy użytkownika z obsługą wielu przeglądarek
+- Dedykowane środowisko testowe z osobną instancją Supabase
+- Automatyczne uruchamianie w CI/CD (GitHub Actions)
+
+### Testy Wizualne
+
+- Storybook do tworzenia izolowanych przypadków komponentów
+- Chromatic do śledzenia zmian wizualnych
+- Testy responsywności i trybu ciemnego
 
 ## 🚀 CI/CD
 
