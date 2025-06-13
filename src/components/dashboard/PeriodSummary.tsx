@@ -101,9 +101,9 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
       <CardContent>
         {isLoading ? (
           <div className="space-y-4">
-            <div className="h-10 bg-muted rounded-lg animate-pulse" />
-            <div className="h-4 bg-muted rounded-lg w-2/3 animate-pulse" />
-            <div className="h-4 bg-muted rounded-lg w-1/2 animate-pulse" />
+            <div className="h-10 bg-muted rounded-lg animate-pulse" data-testid="loading-placeholder" />
+            <div className="h-4 bg-muted rounded-lg w-2/3 animate-pulse" data-testid="loading-placeholder" />
+            <div className="h-4 bg-muted rounded-lg w-1/2 animate-pulse" data-testid="loading-placeholder" />
           </div>
         ) : (
           <>
@@ -114,8 +114,8 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
                 </span>
                 {trendDirection && changePercentage !== undefined && (
                   <div className={`flex items-center gap-1.5 text-sm font-medium ${trendDirection === 'up' ? 'text-red-500' :
-                      trendDirection === 'down' ? 'text-green-500' :
-                        'text-muted-foreground'}`}
+                    trendDirection === 'down' ? 'text-green-500' :
+                      'text-muted-foreground'}`}
                   >
                     {trendDirection === 'up' && <TrendingUp className="h-4 w-4" />}
                     {trendDirection === 'down' && <TrendingDown className="h-4 w-4" />}
