@@ -110,7 +110,10 @@ export const PasswordResetForm: React.FC<PasswordResetFormProps> = ({ onSubmit }
             />
 
             {error && (
-                <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20 text-sm text-destructive">
+                <div
+                    className="p-3 rounded-md bg-destructive/10 border border-destructive/20 text-sm text-destructive"
+                    data-test-id="reset-password-error-message"
+                >
                     {error}
                 </div>
             )}

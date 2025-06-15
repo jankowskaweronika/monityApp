@@ -190,7 +190,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
             </div>
 
             {error && (
-                <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20 text-sm text-destructive">
+                <div
+                    className="p-3 rounded-md bg-destructive/10 border border-destructive/20 text-sm text-destructive"
+                    data-test-id="register-error-message"
+                >
                     {error}
                 </div>
             )}

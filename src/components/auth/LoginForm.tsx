@@ -77,7 +77,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" data-test-id="login-form">
             <FormField
                 label="Email"
                 type="email"
@@ -88,6 +88,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                 onChange={handleFieldChange}
                 error={validationErrors.email}
                 autoComplete="email"
+                data-test-id="login-email-input"
             />
 
             <div className="space-y-2">
@@ -100,6 +101,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                     onChange={handleFieldChange}
                     error={validationErrors.password}
                     autoComplete="current-password"
+                    data-test-id="login-password-input"
                 />
 
                 <div className="flex justify-end">
@@ -113,7 +115,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
             </div>
 
             {error && (
-                <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20 text-sm text-destructive">
+                <div
+                    className="p-3 rounded-md bg-destructive/10 border border-destructive/20 text-sm text-destructive"
+                    data-test-id="login-error-message"
+                >
                     {error}
                 </div>
             )}
@@ -122,6 +127,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                 type="submit"
                 className="w-full"
                 disabled={isLoading || Object.keys(validationErrors).length > 0}
+                data-test-id="login-submit-button"
             >
                 {isLoading ? 'Signing in...' : 'Sign in with Email'}
             </Button>

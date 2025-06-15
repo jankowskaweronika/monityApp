@@ -62,8 +62,8 @@ export const DashboardView: React.FC = () => {
       <div className="py-10">
         <div className="container max-w-5xl mx-auto px-4 space-y-10">
           <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-2">
-            <h1 className="text-4xl font-extrabold tracking-tight text-primary">Dashboard</h1>
-            <Button onClick={refreshData} variant="outline" disabled={loadingState.summary} className="w-full md:w-auto">
+            <h1 className="text-4xl font-extrabold tracking-tight text-primary" data-test-id="dashboard-title">Dashboard</h1>
+            <Button onClick={refreshData} variant="outline" disabled={loadingState.summary} className="w-full md:w-auto" data-test-id="refresh-dashboard-button">
               Refresh
             </Button>
           </div>
@@ -75,13 +75,13 @@ export const DashboardView: React.FC = () => {
           )}
 
           {!isAuthenticated && (
-            <div className="bg-muted/50 border rounded-lg p-4 text-center">
+            <div className="bg-muted/50 border rounded-lg p-4 text-center" data-test-id="dashboard-auth-prompt">
               <p className="text-muted-foreground">
                 Sign in to start tracking your expenses! You can still browse the dashboard.
               </p>
               <div className="mt-2 space-x-4">
                 <Button variant="outline" asChild size="sm">
-                  <Link to="/auth/login">Sign In</Link>
+                  <Link to="/auth/login" data-test-id="dashboard-login-link">Sign In</Link>
                 </Button>
                 <Button asChild size="sm">
                   <Link to="/auth/register">Create Account</Link>
@@ -91,7 +91,7 @@ export const DashboardView: React.FC = () => {
           )}
 
           <div className="grid gap-8 md:grid-cols-2">
-            <Card className="shadow-md">
+            <Card className="shadow-md" data-test-id="period-summary-card">
               <CardContent className="p-8">
                 <PeriodSummary
                   currentPeriod={dashboardData.currentPeriod}
@@ -104,7 +104,7 @@ export const DashboardView: React.FC = () => {
               </CardContent>
             </Card>
 
-            <Card className="shadow-md flex flex-col justify-center">
+            <Card className="shadow-md flex flex-col justify-center" data-test-id="expenses-chart-card">
               <CardContent className="p-8 flex flex-col items-center">
                 <h2 className="text-2xl font-semibold mb-6 text-center">Expenses Distribution</h2>
                 <div className="relative h-[300px] w-full">
@@ -119,28 +119,29 @@ export const DashboardView: React.FC = () => {
             </Card>
           </div>
 
-          <Card className="shadow-md">
+          <Card className="shadow-md" data-test-id="recent-expenses-card">
             <CardContent className="p-8">
               <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
                 <h2 className="text-2xl font-semibold">Recent Expenses</h2>
               </div>
 
               {loadingState.expenses ? (
-                <div className="animate-pulse space-y-4">
+                <div className="animate-pulse space-y-4" data-test-id="expenses-loading">
                   {[...Array(5)].map((_, i) => (
                     <div key={i} className="h-16 bg-muted rounded-lg" />
                   ))}
                 </div>
               ) : dashboardData.recentExpenses.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
+                <div className="text-center py-12 text-muted-foreground" data-test-id="no-expenses-message">
                   {isAuthenticated ? 'No expenses yet. Add your first expense!' : 'No expenses yet. Sign in to start tracking!'}
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-4" data-test-id="expenses-list">
                   {dashboardData.recentExpenses.map((expense) => (
                     <div
                       key={expense.id}
                       className="flex items-center justify-between p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors shadow-sm"
+                      data-test-id={`expense-item-${expense.id}`}
                     >
                       <div className="flex items-center gap-4">
                         <div
@@ -168,10 +169,10 @@ export const DashboardView: React.FC = () => {
       </div>
 
       {isModalOpen && isAuthenticated && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50" data-test-id="add-expense-modal">
           <div className="bg-card p-8 rounded-xl shadow-lg max-w-md w-full border">
             <h2 className="text-2xl font-semibold mb-6">Add New Expense</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4" data-test-id="add-expense-form">
               <div>
                 <label htmlFor="amount" className="block text-sm font-medium mb-2 text-muted-foreground">Amount</label>
                 <input
@@ -183,6 +184,7 @@ export const DashboardView: React.FC = () => {
                   required
                   step="0.01"
                   min="0"
+                  data-test-id="expense-amount-input"
                 />
               </div>
               <div>
@@ -193,6 +195,7 @@ export const DashboardView: React.FC = () => {
                   onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
                   className="w-full p-2 rounded-md border bg-background shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   required
+                  data-test-id="expense-category-select"
                 >
                   <option value="">Select a category</option>
                   {dashboardData.availableCategories.map(category => (
@@ -211,6 +214,7 @@ export const DashboardView: React.FC = () => {
                   onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
                   className="w-full p-2 rounded-md border bg-background shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   required
+                  data-test-id="expense-date-input"
                 />
               </div>
               <div>
@@ -224,11 +228,12 @@ export const DashboardView: React.FC = () => {
                   required
                   placeholder="Enter expense description"
                   minLength={1}
+                  data-test-id="expense-description-input"
                 />
               </div>
               <div className="flex justify-end gap-2 pt-2">
-                <Button type="button" variant="outline" onClick={closeModal}>Cancel</Button>
-                <Button type="submit">Add Expense</Button>
+                <Button type="button" variant="outline" onClick={closeModal} data-test-id="cancel-expense-button">Cancel</Button>
+                <Button type="submit" data-test-id="submit-expense-button">Add Expense</Button>
               </div>
             </form>
           </div>
@@ -241,6 +246,7 @@ export const DashboardView: React.FC = () => {
         onClick={openModal}
         disabled={!isAuthenticated}
         title={!isAuthenticated ? "Sign in to add expenses" : "Add new expense"}
+        data-test-id="add-expense-button"
       >
         <Plus className="w-5 h-5 mr-2" />
         Add Expense

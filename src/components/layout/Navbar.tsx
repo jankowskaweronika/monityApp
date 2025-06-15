@@ -35,7 +35,11 @@ export const Navbar: React.FC = () => {
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Button
+                    variant="ghost"
+                    className="relative h-8 w-8 rounded-full"
+                    aria-label="user menu"
+                  >
                     <LucideUser className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -55,9 +59,9 @@ export const Navbar: React.FC = () => {
                       <span>Settings</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive">
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive" data-test-id="logout-button">
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
+                    <span>Sign out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
