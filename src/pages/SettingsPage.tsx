@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { useAppSelector } from '../store/hooks';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
@@ -10,7 +10,6 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
 export const SettingsPage = () => {
-  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);

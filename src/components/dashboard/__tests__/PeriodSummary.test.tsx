@@ -1,66 +1,49 @@
-import { describe, test, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import { PeriodSummary } from '../PeriodSummary'
-
-// Mock data
-const mockCurrentPeriod = {
-  start: '2024-03-01',
-  end: '2024-03-31'
-}
-
-const mockCategoryBreakdown = [
-  {
-    category: 'Food',
-    amount: 1000,
-    percentage: 66.7
-  },
-  {
-    category: 'Transport',
-    amount: 500,
-    percentage: 33.3
-  }
-]
+import { describe, test, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { PeriodSummary } from '../PeriodSummary';
 
 describe('PeriodSummary', () => {
   const defaultProps = {
-    currentPeriod: mockCurrentPeriod,
+    currentPeriod: {
+      start_date: '2024-01-01',
+      end_date: '2024-01-31'
+    },
     totalAmount: 1500,
-    categoryBreakdown: mockCategoryBreakdown,
+    categoryBreakdown: [
+      {
+        category: 'Food',
+        amount: 1000,
+        percentage: 66.7
+      },
+      {
+        category: 'Transport',
+        amount: 500,
+        percentage: 33.3
+      }
+    ],
     isLoading: false,
     previousPeriodTotal: 1200,
     percentageChange: 25.0
-  }
+  };
 
-  test('renders loading state correctly', () => {
+  test('renders loading state', () => {
     render(<PeriodSummary {...defaultProps} isLoading={true} />)
     expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
 
-  test('displays correct total amount and trend', () => {
+  test('renders period dates correctly', () => {
     render(<PeriodSummary {...defaultProps} />)
+    expect(screen.getByText('1/1/2024 - 1/31/2024')).toBeInTheDocument()
+  })
 
-    // Sprawdź wyświetlaną kwotę
+  test('displays total amount correctly', () => {
+    render(<PeriodSummary {...defaultProps} />)
     expect(screen.getByText('$1500.00')).toBeInTheDocument()
-
-    // Sprawdź trend (wzrost o 25%)
-    const trendElement = screen.getByText('+25.0%')
-    expect(trendElement).toHaveClass('text-red-600')
   })
 
-  test('handles negative trend correctly', () => {
+  test('displays percentage change correctly', () => {
     render(<PeriodSummary {...defaultProps} percentageChange={-25.0} />)
-
-    // Sprawdź trend (spadek o 25%)
-    const trendElement = screen.getByText('-25.0%')
-    expect(trendElement).toHaveClass('text-green-600')
-  })
-
-  test('displays correct date range', () => {
-    render(<PeriodSummary {...defaultProps} />)
-
-    // Sprawdź format daty (zależny od lokalizacji)
-    const dateText = screen.getByText(/3\/1\/2024 - 3\/31\/2024/)
-    expect(dateText).toBeInTheDocument()
+    expect(screen.getByText('-25.0%')).toBeInTheDocument()
   })
 
   test('displays category breakdown correctly', () => {

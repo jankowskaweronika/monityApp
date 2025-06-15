@@ -1,11 +1,9 @@
 import React from 'react';
 import { Card } from '../ui/card';
+import { PeriodInfo } from '../../types/types';
 
 export interface PeriodSummaryProps {
-  currentPeriod: {
-    start: string;
-    end: string;
-  };
+  currentPeriod: Pick<PeriodInfo, 'start_date' | 'end_date'>;
   totalAmount: number;
   categoryBreakdown: Array<{
     category: string;
@@ -13,7 +11,6 @@ export interface PeriodSummaryProps {
     percentage: number;
   }>;
   isLoading: boolean;
-  previousPeriodTotal: number;
   percentageChange: number;
 }
 
@@ -22,7 +19,6 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
   totalAmount = 0,
   categoryBreakdown = [],
   isLoading,
-  previousPeriodTotal = 0,
   percentageChange = 0,
 }) => {
   if (isLoading) {
@@ -34,8 +30,8 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
   }
 
   // Zabezpieczenie przed nieprawidłowymi datami
-  const startDate = currentPeriod?.start ? new Date(currentPeriod.start) : new Date();
-  const endDate = currentPeriod?.end ? new Date(currentPeriod.end) : new Date();
+  const startDate = currentPeriod?.start_date ? new Date(currentPeriod.start_date) : new Date();
+  const endDate = currentPeriod?.end_date ? new Date(currentPeriod.end_date) : new Date();
 
   return (
     <Card title="Period Summary">

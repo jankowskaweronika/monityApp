@@ -14,13 +14,13 @@ export const DashboardPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector(state => state.auth.user);
   const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading] = React.useState(false);
 
   // Mock data for testing
   const mockData = {
     currentPeriod: {
-      start: new Date().toISOString(),
-      end: new Date().toISOString(),
+      start_date: '2024-01-01',
+      end_date: '2024-01-31'
     },
     totalAmount: 1500.00,
     categoryBreakdown: [
@@ -28,7 +28,6 @@ export const DashboardPage: React.FC = () => {
       { category: 'Transport', amount: 300.00, percentage: 20.0 },
       { category: 'Entertainment', amount: 700.00, percentage: 46.7 },
     ],
-    previousPeriodTotal: 1200.00,
     percentageChange: 25.0,
   };
 
@@ -39,34 +38,6 @@ export const DashboardPage: React.FC = () => {
       navigate('/auth/login');
     } catch (error) {
       console.error('Error logging out:', error);
-    }
-  };
-
-  const handleAddExpense = async (expenseData: {
-    amount: string;
-    categoryId: string;
-    date: string;
-    description: string;
-  }) => {
-    try {
-      setIsLoading(true);
-      // TODO: Implement expense addition logic
-      setIsAddExpenseModalOpen(false);
-    } catch (error) {
-      console.error('Error adding expense:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleRefresh = async () => {
-    try {
-      setIsLoading(true);
-      // TODO: Implement refresh logic
-    } catch (error) {
-      console.error('Error refreshing dashboard:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -93,8 +64,8 @@ export const DashboardPage: React.FC = () => {
         <div data-test-id="period-summary-card">
           <PeriodSummary
             currentPeriod={{
-              start: mockData.currentPeriod.start,
-              end: mockData.currentPeriod.end
+              start_date: mockData.currentPeriod.start_date,
+              end_date: mockData.currentPeriod.end_date
             }}
             totalAmount={mockData.totalAmount}
             categoryBreakdown={mockData.categoryBreakdown.map(item => ({
@@ -103,7 +74,6 @@ export const DashboardPage: React.FC = () => {
               percentage: item.percentage
             }))}
             isLoading={isLoading}
-            previousPeriodTotal={mockData.previousPeriodTotal}
             percentageChange={mockData.percentageChange}
           />
         </div>
@@ -131,7 +101,6 @@ export const DashboardPage: React.FC = () => {
         <AddExpenseModal
           isOpen={isAddExpenseModalOpen}
           onClose={() => setIsAddExpenseModalOpen(false)}
-          onSubmit={handleAddExpense}
           data-test-id="add-expense-modal"
         />
       )}

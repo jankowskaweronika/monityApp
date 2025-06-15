@@ -11,7 +11,7 @@ interface LoginFormProps {
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
-    const { form, formErrors, isSubmitting, handleSubmit } = useLoginForm();
+    const { form, formErrors, isSubmitting } = useLoginForm();
 
     const handleFormSubmit = async (data: LoginFormData) => {
         try {

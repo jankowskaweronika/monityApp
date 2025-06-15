@@ -11,7 +11,7 @@ interface RegisterFormProps {
 }
 
 export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
-    const { form, formErrors, isSubmitting, handleSubmit } = useRegisterForm();
+    const { form, formErrors, isSubmitting } = useRegisterForm();
     const password = useWatch({ control: form.control, name: 'password' });
 
     const handleFormSubmit = async (data: RegisterFormData) => {

@@ -13,12 +13,10 @@ export const DashboardView: React.FC = () => {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const {
     dashboardData,
-    selectedPeriod,
     isModalOpen,
     loadingState,
     error,
     refreshData,
-    changePeriod,
     openModal,
     closeModal,
     addExpense,
@@ -50,10 +48,6 @@ export const DashboardView: React.FC = () => {
     } catch (err) {
       console.error('Error adding expense:', err);
     }
-  };
-
-  const renderAuthPrompt = () => {
-    return null;
   };
 
   return (
@@ -94,12 +88,18 @@ export const DashboardView: React.FC = () => {
             <Card className="shadow-md" data-test-id="period-summary-card">
               <CardContent className="p-8">
                 <PeriodSummary
-                  currentPeriod={dashboardData.currentPeriod}
+                  currentPeriod={{
+                    start_date: dashboardData.currentPeriod.start_date,
+                    end_date: dashboardData.currentPeriod.end_date
+                  }}
                   totalAmount={dashboardData.summary.total_amount}
-                  categoryBreakdown={dashboardData.summary.category_breakdown}
+                  categoryBreakdown={dashboardData.summary.category_breakdown.map(item => ({
+                    category: item.category_name,
+                    amount: item.amount,
+                    percentage: item.percentage
+                  }))}
                   isLoading={loadingState.summary}
-                  selectedPeriod={selectedPeriod}
-                  onPeriodChange={changePeriod}
+                  percentageChange={0}
                 />
               </CardContent>
             </Card>
@@ -109,7 +109,11 @@ export const DashboardView: React.FC = () => {
                 <h2 className="text-2xl font-semibold mb-6 text-center">Expenses Distribution</h2>
                 <div className="relative h-[300px] w-full">
                   <ExpensesChart
-                    categoryBreakdown={dashboardData.summary.category_breakdown}
+                    categoryBreakdown={dashboardData.summary.category_breakdown.map(item => ({
+                      category: item.category_name,
+                      amount: item.amount,
+                      percentage: item.percentage
+                    }))}
                     totalAmount={dashboardData.summary.total_amount}
                   />
                   <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center">
