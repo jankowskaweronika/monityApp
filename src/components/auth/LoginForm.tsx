@@ -1,107 +1,42 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '../ui/button';
-import { FormField } from './FormField';
 import { Link } from 'react-router-dom';
+import { BaseForm } from '../forms/BaseForm';
+import { FormInput } from '../forms/FormInput';
+import { useLoginForm } from '@/hooks/useAuthForm';
+import type { LoginFormData } from '@/validations/authSchema';
 
 interface LoginFormProps {
-    onSubmit: (data: { email: string; password: string }) => Promise<void>;
-}
-
-interface ValidationErrors {
-    email?: string;
-    password?: string;
+    onSubmit: (data: LoginFormData) => Promise<void>;
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
-    const [formData, setFormData] = useState({
-        email: '',
-        password: ''
-    });
-
-    const validateField = (name: keyof typeof formData, value: string) => {
-        const errors: ValidationErrors = { ...validationErrors };
-
-        switch (name) {
-            case 'email':
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(value)) {
-                    errors.email = 'Please enter a valid email address';
-                } else {
-                    delete errors.email;
-                }
-                break;
-
-            case 'password':
-                if (value.length < 1) {
-                    errors.password = 'Password is required';
-                } else {
-                    delete errors.password;
-                }
-                break;
-        }
-
-        setValidationErrors(errors);
-        return Object.keys(errors).length === 0;
-    };
-
-    const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-        validateField(name as keyof typeof formData, value);
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError(null);
-
-        const isValid = Object.keys(formData).every(key =>
-            validateField(key as keyof typeof formData, formData[key as keyof typeof formData])
-        );
-
-        if (!isValid) {
-            return;
-        }
-
-        setIsLoading(true);
-
-        try {
-            await onSubmit(formData);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'An error occurred');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const { form, formErrors, isSubmitting, handleSubmit } = useLoginForm();
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4" data-test-id="login-form">
-            <FormField
+        <BaseForm
+            form={form}
+            onSubmit={onSubmit}
+            className="space-y-4"
+        >
+            <FormInput
                 label="Email"
                 type="email"
                 name="email"
                 placeholder="name@example.com"
                 required
-                value={formData.email}
-                onChange={handleFieldChange}
-                error={validationErrors.email}
                 autoComplete="email"
-                data-test-id="login-email-input"
+                data-testid="login-email-input"
             />
 
             <div className="space-y-2">
-                <FormField
+                <FormInput
                     label="Password"
                     type="password"
                     name="password"
                     required
-                    value={formData.password}
-                    onChange={handleFieldChange}
-                    error={validationErrors.password}
                     autoComplete="current-password"
-                    data-test-id="login-password-input"
+                    data-testid="login-password-input"
                 />
 
                 <div className="flex justify-end">
@@ -114,22 +49,22 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                 </div>
             </div>
 
-            {error && (
+            {formErrors.root && (
                 <div
                     className="p-3 rounded-md bg-destructive/10 border border-destructive/20 text-sm text-destructive"
-                    data-test-id="login-error-message"
+                    data-testid="login-error-message"
                 >
-                    {error}
+                    {formErrors.root.message}
                 </div>
             )}
 
             <Button
                 type="submit"
                 className="w-full"
-                disabled={isLoading || Object.keys(validationErrors).length > 0}
-                data-test-id="login-submit-button"
+                disabled={isSubmitting}
+                data-testid="login-submit-button"
             >
-                {isLoading ? 'Signing in...' : 'Sign in with Email'}
+                {isSubmitting ? 'Signing in...' : 'Sign in with Email'}
             </Button>
 
             <div className="relative">
@@ -147,6 +82,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
                     Sign up
                 </Link>
             </div>
-        </form>
+        </BaseForm>
     );
 };

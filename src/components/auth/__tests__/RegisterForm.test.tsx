@@ -2,6 +2,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { RegisterForm } from '../RegisterForm'
+import { act } from 'react-dom/test-utils'
 
 const renderWithRouter = (component: React.ReactNode) => {
   return render(
@@ -24,69 +25,79 @@ describe('RegisterForm', () => {
   test('renders registration form with all fields', () => {
     renderWithRouter(<RegisterForm {...defaultProps} />)
 
-    expect(screen.getByLabelText(/^full name$/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/^email$/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/^confirm password$/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /create account/i })).toBeInTheDocument()
+    expect(screen.getByTestId('register-fullname-input')).toBeInTheDocument()
+    expect(screen.getByTestId('register-email-input')).toBeInTheDocument()
+    expect(screen.getByTestId('register-password-input')).toBeInTheDocument()
+    expect(screen.getByTestId('register-confirm-password-input')).toBeInTheDocument()
+    expect(screen.getByTestId('register-submit-button')).toBeInTheDocument()
   })
 
   test('validates full name length', async () => {
     renderWithRouter(<RegisterForm {...defaultProps} />)
 
-    const nameInput = screen.getByLabelText(/full name/i)
+    const nameInput = screen.getByTestId('register-fullname-input')
 
     // Test too short name
-    fireEvent.change(nameInput, { target: { value: 'A' } })
-    fireEvent.blur(nameInput)
+    await act(async () => {
+      fireEvent.change(nameInput, { target: { value: 'A' } })
+      fireEvent.blur(nameInput)
+    })
 
     await waitFor(() => {
-      expect(screen.getByText(/full name must be at least 2 characters long/i)).toBeInTheDocument()
+      expect(screen.getByText(/imię i nazwisko musi mieć minimum 2 znaki/i)).toBeInTheDocument()
     })
 
     // Test valid name
-    fireEvent.change(nameInput, { target: { value: 'John Doe' } })
-    fireEvent.blur(nameInput)
+    await act(async () => {
+      fireEvent.change(nameInput, { target: { value: 'John Doe' } })
+      fireEvent.blur(nameInput)
+    })
 
     await waitFor(() => {
-      expect(screen.queryByText(/full name must be at least 2 characters long/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/imię i nazwisko musi mieć minimum 2 znaki/i)).not.toBeInTheDocument()
     })
   })
 
   test('validates email format', async () => {
     renderWithRouter(<RegisterForm {...defaultProps} />)
 
-    const emailInput = screen.getByLabelText(/email/i)
+    const emailInput = screen.getByTestId('register-email-input')
 
     // Test invalid email
-    fireEvent.change(emailInput, { target: { value: 'invalid-email' } })
-    fireEvent.blur(emailInput)
+    await act(async () => {
+      fireEvent.change(emailInput, { target: { value: 'invalid-email' } })
+      fireEvent.blur(emailInput)
+    })
 
     await waitFor(() => {
-      expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument()
+      expect(screen.getByText(/nieprawidłowy adres email/i)).toBeInTheDocument()
     })
 
     // Test valid email
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
-    fireEvent.blur(emailInput)
+    await act(async () => {
+      fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
+      fireEvent.blur(emailInput)
+    })
 
     await waitFor(() => {
-      expect(screen.queryByText(/please enter a valid email address/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/nieprawidłowy adres email/i)).not.toBeInTheDocument()
     })
   })
 
   test('validates password requirements', async () => {
     renderWithRouter(<RegisterForm {...defaultProps} />)
 
-    const passwordInput = screen.getByLabelText(/^password$/i)
+    const passwordInput = screen.getByTestId('register-password-input')
 
     // Test password that doesn't meet requirements
-    fireEvent.change(passwordInput, { target: { value: 'weak' } })
-    fireEvent.blur(passwordInput)
+    await act(async () => {
+      fireEvent.change(passwordInput, { target: { value: 'weak' } })
+      fireEvent.blur(passwordInput)
+    })
 
     await waitFor(() => {
-      expect(screen.getByText(/password does not meet all requirements/i)).toBeInTheDocument()
-      // Sprawdź wyświetlane wymagania
+      expect(screen.getByText(/hasło musi mieć minimum 8 znaków/i)).toBeInTheDocument()
+      // Check displayed requirements
       expect(screen.getByText(/at least 8 characters long/i)).toBeInTheDocument()
       expect(screen.getByText(/one uppercase letter/i)).toBeInTheDocument()
       expect(screen.getByText(/one lowercase letter/i)).toBeInTheDocument()
@@ -95,55 +106,73 @@ describe('RegisterForm', () => {
     })
 
     // Test valid password
-    fireEvent.change(passwordInput, { target: { value: 'StrongP@ss123' } })
-    fireEvent.blur(passwordInput)
+    await act(async () => {
+      fireEvent.change(passwordInput, { target: { value: 'StrongP@ss123' } })
+      fireEvent.blur(passwordInput)
+    })
 
     await waitFor(() => {
-      expect(screen.queryByText(/password does not meet all requirements/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/hasło musi mieć minimum 8 znaków/i)).not.toBeInTheDocument()
     })
   })
 
   test('validates password confirmation', async () => {
     renderWithRouter(<RegisterForm {...defaultProps} />)
 
-    const passwordInput = screen.getByLabelText(/^password$/i)
-    const confirmInput = screen.getByLabelText(/^confirm password$/i)
+    const passwordInput = screen.getByTestId('register-password-input')
+    const confirmInput = screen.getByTestId('register-confirm-password-input')
 
     // Set initial password
-    fireEvent.change(passwordInput, { target: { value: 'StrongP@ss123' } })
+    await act(async () => {
+      fireEvent.change(passwordInput, { target: { value: 'StrongP@ss123' } })
+      fireEvent.blur(passwordInput)
+    })
 
     // Test non-matching confirmation
-    fireEvent.change(confirmInput, { target: { value: 'DifferentP@ss123' } })
-    fireEvent.blur(confirmInput)
+    await act(async () => {
+      fireEvent.change(confirmInput, { target: { value: 'DifferentP@ss123' } })
+      fireEvent.blur(confirmInput)
+    })
 
     await waitFor(() => {
-      expect(screen.getByText(/passwords do not match/i)).toBeInTheDocument()
+      expect(screen.getByText(/hasła nie są identyczne/i)).toBeInTheDocument()
     })
 
     // Test matching confirmation
-    fireEvent.change(confirmInput, { target: { value: 'StrongP@ss123' } })
-    fireEvent.blur(confirmInput)
+    await act(async () => {
+      fireEvent.change(confirmInput, { target: { value: 'StrongP@ss123' } })
+      fireEvent.blur(confirmInput)
+    })
 
     await waitFor(() => {
-      expect(screen.queryByText(/passwords do not match/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/hasła nie są identyczne/i)).not.toBeInTheDocument()
     })
   })
 
   test('updates password confirmation validation when password changes', async () => {
     renderWithRouter(<RegisterForm {...defaultProps} />)
 
-    const passwordInput = screen.getByLabelText(/^password$/i)
-    const confirmInput = screen.getByLabelText(/^confirm password$/i)
+    const passwordInput = screen.getByTestId('register-password-input')
+    const confirmInput = screen.getByTestId('register-confirm-password-input')
 
     // Set matching passwords
-    fireEvent.change(passwordInput, { target: { value: 'StrongP@ss123' } })
-    fireEvent.change(confirmInput, { target: { value: 'StrongP@ss123' } })
+    await act(async () => {
+      fireEvent.change(passwordInput, { target: { value: 'StrongP@ss123' } })
+      fireEvent.change(confirmInput, { target: { value: 'StrongP@ss123' } })
+      fireEvent.blur(passwordInput)
+      fireEvent.blur(confirmInput)
+    })
 
     // Change password
-    fireEvent.change(passwordInput, { target: { value: 'NewP@ss123' } })
+    await act(async () => {
+      fireEvent.change(passwordInput, { target: { value: 'NewP@ss123' } })
+      fireEvent.blur(passwordInput)
+    })
 
     await waitFor(() => {
-      expect(screen.getByText(/passwords do not match/i)).toBeInTheDocument()
+      const errorElement = screen.getByTestId('confirmPassword-error')
+      expect(errorElement).toBeInTheDocument()
+      expect(errorElement).toHaveTextContent(/hasła nie są identyczne/i)
     })
   })
 
@@ -151,21 +180,25 @@ describe('RegisterForm', () => {
     renderWithRouter(<RegisterForm {...defaultProps} />)
 
     // Fill in valid data
-    fireEvent.change(screen.getByLabelText(/^full name$/i), {
-      target: { value: 'John Doe' }
-    })
-    fireEvent.change(screen.getByLabelText(/^email$/i), {
-      target: { value: 'test@example.com' }
-    })
-    fireEvent.change(screen.getByLabelText(/^password$/i), {
-      target: { value: 'StrongP@ss123' }
-    })
-    fireEvent.change(screen.getByLabelText(/^confirm password$/i), {
-      target: { value: 'StrongP@ss123' }
+    await act(async () => {
+      fireEvent.change(screen.getByTestId('register-fullname-input'), {
+        target: { value: 'John Doe' }
+      })
+      fireEvent.change(screen.getByTestId('register-email-input'), {
+        target: { value: 'test@example.com' }
+      })
+      fireEvent.change(screen.getByTestId('register-password-input'), {
+        target: { value: 'StrongP@ss123' }
+      })
+      fireEvent.change(screen.getByTestId('register-confirm-password-input'), {
+        target: { value: 'StrongP@ss123' }
+      })
     })
 
     // Submit form
-    fireEvent.click(screen.getByRole('button', { name: /create account/i }))
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('register-submit-button'))
+    })
 
     await waitFor(() => {
       expect(mockOnSubmit).toHaveBeenCalledWith({
@@ -180,28 +213,37 @@ describe('RegisterForm', () => {
     renderWithRouter(<RegisterForm {...defaultProps} />)
 
     // Fill in invalid data
-    fireEvent.change(screen.getByLabelText(/^full name$/i), {
-      target: { value: 'A' }
-    })
-    fireEvent.change(screen.getByLabelText(/^email$/i), {
-      target: { value: 'invalid-email' }
-    })
-    fireEvent.change(screen.getByLabelText(/^password$/i), {
-      target: { value: 'weak' }
-    })
-    fireEvent.change(screen.getByLabelText(/^confirm password$/i), {
-      target: { value: 'different' }
+    await act(async () => {
+      fireEvent.change(screen.getByTestId('register-fullname-input'), {
+        target: { value: 'A' }
+      })
+      fireEvent.change(screen.getByTestId('register-email-input'), {
+        target: { value: 'invalid-email' }
+      })
+      fireEvent.change(screen.getByTestId('register-password-input'), {
+        target: { value: 'weak' }
+      })
+      fireEvent.change(screen.getByTestId('register-confirm-password-input'), {
+        target: { value: 'different' }
+      })
     })
 
     // Submit form
-    fireEvent.click(screen.getByRole('button', { name: /create account/i }))
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('register-submit-button'))
+    })
 
+    // Wait for validation errors to appear
     await waitFor(() => {
       expect(mockOnSubmit).not.toHaveBeenCalled()
-      expect(screen.getByText(/full name must be at least 2 characters long/i)).toBeInTheDocument()
-      expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument()
-      expect(screen.getByText(/password does not meet all requirements/i)).toBeInTheDocument()
-      expect(screen.getByText(/passwords do not match/i)).toBeInTheDocument()
+    })
+
+    // Check for validation errors
+    await waitFor(() => {
+      expect(screen.getByText(/imię i nazwisko musi mieć minimum 2 znaki/i)).toBeInTheDocument()
+      expect(screen.getByText(/nieprawidłowy adres email/i)).toBeInTheDocument()
+      expect(screen.getByText(/hasło musi mieć minimum 8 znaków/i)).toBeInTheDocument()
+      expect(screen.getByText(/hasła nie są identyczne/i)).toBeInTheDocument()
     })
   })
 
@@ -212,79 +254,68 @@ describe('RegisterForm', () => {
     renderWithRouter(<RegisterForm {...defaultProps} />)
 
     // Fill in valid data
-    fireEvent.change(screen.getByLabelText(/^full name$/i), {
-      target: { value: 'John Doe' }
-    })
-    fireEvent.change(screen.getByLabelText(/^email$/i), {
-      target: { value: 'test@example.com' }
-    })
-    fireEvent.change(screen.getByLabelText(/^password$/i), {
-      target: { value: 'StrongP@ss123' }
-    })
-    fireEvent.change(screen.getByLabelText(/^confirm password$/i), {
-      target: { value: 'StrongP@ss123' }
+    await act(async () => {
+      fireEvent.change(screen.getByTestId('register-fullname-input'), {
+        target: { value: 'John Doe' }
+      })
+      fireEvent.change(screen.getByTestId('register-email-input'), {
+        target: { value: 'test@example.com' }
+      })
+      fireEvent.change(screen.getByTestId('register-password-input'), {
+        target: { value: 'StrongP@ss123' }
+      })
+      fireEvent.change(screen.getByTestId('register-confirm-password-input'), {
+        target: { value: 'StrongP@ss123' }
+      })
     })
 
     // Submit form
-    fireEvent.click(screen.getByRole('button', { name: /create account/i }))
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('register-submit-button'))
+    })
 
-    // Poczekaj na pojawienie się komunikatu błędu
+    // Wait for error message to appear
     await waitFor(() => {
-      const errorElement = screen.getByText((content) => content.includes(errorMessage))
-      expect(errorElement).toBeInTheDocument()
-    }, { timeout: 2000 })
+      expect(screen.getByTestId('register-error-message')).toBeInTheDocument()
+      expect(screen.getByTestId('register-error-message')).toHaveTextContent(errorMessage)
+    })
   })
 
-  test('clears error message when form is modified after error', async () => {
-    const errorMessage = 'Email already exists'
-    mockOnSubmit.mockRejectedValueOnce(new Error(errorMessage))
+  test('shows loading state during submission', async () => {
+    // Mock long response time
+    mockOnSubmit.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)))
 
     renderWithRouter(<RegisterForm {...defaultProps} />)
 
-    // Fill in valid data first
-    fireEvent.change(screen.getByLabelText(/^full name$/i), {
-      target: { value: 'John Doe' }
-    })
-    fireEvent.change(screen.getByLabelText(/^email$/i), {
-      target: { value: 'test@example.com' }
-    })
-    fireEvent.change(screen.getByLabelText(/^password$/i), {
-      target: { value: 'StrongP@ss123' }
-    })
-    fireEvent.change(screen.getByLabelText(/^confirm password$/i), {
-      target: { value: 'StrongP@ss123' }
+    // Fill in valid data
+    await act(async () => {
+      fireEvent.change(screen.getByTestId('register-fullname-input'), {
+        target: { value: 'John Doe' }
+      })
+      fireEvent.change(screen.getByTestId('register-email-input'), {
+        target: { value: 'test@example.com' }
+      })
+      fireEvent.change(screen.getByTestId('register-password-input'), {
+        target: { value: 'StrongP@ss123' }
+      })
+      fireEvent.change(screen.getByTestId('register-confirm-password-input'), {
+        target: { value: 'StrongP@ss123' }
+      })
     })
 
     // Submit form
-    fireEvent.click(screen.getByRole('button', { name: /create account/i }))
+    const submitButton = screen.getByTestId('register-submit-button')
+    await act(async () => {
+      fireEvent.click(submitButton)
+    })
 
-    // Poczekaj na pojawienie się komunikatu błędu
+    // Check loading state
+    expect(submitButton).toBeDisabled()
+    expect(submitButton).toHaveTextContent(/creating account/i)
+
     await waitFor(() => {
-      const errorElement = screen.getByText((content) => content.includes(errorMessage))
-      expect(errorElement).toBeInTheDocument()
-    }, { timeout: 2000 })
-
-    // Reset form state by clicking submit button again
-    fireEvent.click(screen.getByRole('button', { name: /create account/i }))
-
-    // Modify form - zmień wszystkie pola, aby upewnić się, że błąd zostanie wyczyszczony
-    fireEvent.change(screen.getByLabelText(/^full name$/i), {
-      target: { value: 'Jane Doe' }
+      expect(submitButton).not.toBeDisabled()
+      expect(submitButton).toHaveTextContent(/create account/i)
     })
-    fireEvent.change(screen.getByLabelText(/^email$/i), {
-      target: { value: 'new@example.com' }
-    })
-    fireEvent.change(screen.getByLabelText(/^password$/i), {
-      target: { value: 'NewP@ss123' }
-    })
-    fireEvent.change(screen.getByLabelText(/^confirm password$/i), {
-      target: { value: 'NewP@ss123' }
-    })
-
-    // Poczekaj na zniknięcie komunikatu błędu
-    await waitFor(() => {
-      const errorElement = screen.queryByText((content) => content.includes(errorMessage))
-      expect(errorElement).not.toBeInTheDocument()
-    }, { timeout: 2000 })
   })
 }) 

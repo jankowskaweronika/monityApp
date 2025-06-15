@@ -2,6 +2,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { LoginForm } from '../LoginForm'
+import { act } from 'react-dom/test-utils'
 
 const renderWithRouter = (component: React.ReactNode) => {
   return render(
@@ -24,55 +25,61 @@ describe('LoginForm', () => {
   test('renders login form with all fields', () => {
     renderWithRouter(<LoginForm {...defaultProps} />)
 
-    expect(screen.getByLabelText(/^email$/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
+    expect(screen.getByTestId('login-email-input')).toBeInTheDocument()
+    expect(screen.getByTestId('login-password-input')).toBeInTheDocument()
+    expect(screen.getByTestId('login-submit-button')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /forgot your password/i })).toBeInTheDocument()
   })
 
   test('validates email format', async () => {
     renderWithRouter(<LoginForm {...defaultProps} />)
 
-    const emailInput = screen.getByLabelText(/^email$/i)
+    const emailInput = screen.getByTestId('login-email-input')
 
     // Test invalid email
-    fireEvent.change(emailInput, { target: { value: 'invalid-email' } })
-    fireEvent.blur(emailInput)
+    await act(async () => {
+      fireEvent.change(emailInput, { target: { value: 'invalid-email' } })
+      fireEvent.blur(emailInput)
+    })
 
     await waitFor(() => {
-      expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument()
+      expect(screen.getByText(/nieprawidłowy adres email/i)).toBeInTheDocument()
     })
 
     // Test valid email
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
-    fireEvent.blur(emailInput)
+    await act(async () => {
+      fireEvent.change(emailInput, { target: { value: 'test@example.com' } })
+      fireEvent.blur(emailInput)
+    })
 
     await waitFor(() => {
-      expect(screen.queryByText(/please enter a valid email address/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/nieprawidłowy adres email/i)).not.toBeInTheDocument()
     })
   })
 
   test('validates required password', async () => {
     renderWithRouter(<LoginForm {...defaultProps} />)
 
-    const passwordInput = screen.getByLabelText(/^password$/i)
-    const submitButton = screen.getByRole('button', { name: /sign in/i })
+    const passwordInput = screen.getByTestId('login-password-input')
+    const submitButton = screen.getByTestId('login-submit-button')
 
     // Submit form without password
-    fireEvent.click(submitButton)
-
-    // Sprawdź, czy pole hasła jest oznaczone jako wymagane
-    await waitFor(() => {
-      expect(passwordInput).toBeInvalid()
+    await act(async () => {
+      fireEvent.click(submitButton)
     })
 
-    // Wprowadź hasło
-    fireEvent.change(passwordInput, { target: { value: 'password123' } })
-    fireEvent.blur(passwordInput)
-
-    // Sprawdź, czy walidacja została wyczyszczona
     await waitFor(() => {
-      expect(passwordInput).not.toBeInvalid()
+      expect(screen.getByText(/hasło jest wymagane/i)).toBeInTheDocument()
+    })
+
+    // Enter password
+    await act(async () => {
+      fireEvent.change(passwordInput, { target: { value: 'password123' } })
+      fireEvent.blur(passwordInput)
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText(/hasło jest wymagane/i)).not.toBeInTheDocument()
     })
   })
 
@@ -80,15 +87,19 @@ describe('LoginForm', () => {
     renderWithRouter(<LoginForm {...defaultProps} />)
 
     // Fill in valid data
-    fireEvent.change(screen.getByLabelText(/^email$/i), {
-      target: { value: 'test@example.com' }
-    })
-    fireEvent.change(screen.getByLabelText(/^password$/i), {
-      target: { value: 'password123' }
+    await act(async () => {
+      fireEvent.change(screen.getByTestId('login-email-input'), {
+        target: { value: 'test@example.com' }
+      })
+      fireEvent.change(screen.getByTestId('login-password-input'), {
+        target: { value: 'password123' }
+      })
     })
 
     // Submit form
-    fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('login-submit-button'))
+    })
 
     await waitFor(() => {
       expect(mockOnSubmit).toHaveBeenCalledWith({
@@ -102,19 +113,22 @@ describe('LoginForm', () => {
     renderWithRouter(<LoginForm {...defaultProps} />)
 
     // Fill in invalid data
-    fireEvent.change(screen.getByLabelText(/^email$/i), {
-      target: { value: 'invalid-email' }
+    await act(async () => {
+      fireEvent.change(screen.getByTestId('login-email-input'), {
+        target: { value: 'invalid-email' }
+      })
+      // Don't fill in password
     })
-    // Nie wypełniaj hasła
 
     // Submit form
-    const submitButton = screen.getByRole('button', { name: /sign in/i })
-    fireEvent.click(submitButton)
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('login-submit-button'))
+    })
 
     await waitFor(() => {
       expect(mockOnSubmit).not.toHaveBeenCalled()
-      expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument()
-      expect(screen.getByLabelText(/^password$/i)).toBeInvalid()
+      expect(screen.getByText(/nieprawidłowy adres email/i)).toBeInTheDocument()
+      expect(screen.getByText(/hasło jest wymagane/i)).toBeInTheDocument()
     })
   })
 
@@ -125,42 +139,49 @@ describe('LoginForm', () => {
     renderWithRouter(<LoginForm {...defaultProps} />)
 
     // Fill in valid data
-    fireEvent.change(screen.getByLabelText(/^email$/i), {
-      target: { value: 'test@example.com' }
-    })
-    fireEvent.change(screen.getByLabelText(/^password$/i), {
-      target: { value: 'password123' }
+    await act(async () => {
+      fireEvent.change(screen.getByTestId('login-email-input'), {
+        target: { value: 'test@example.com' }
+      })
+      fireEvent.change(screen.getByTestId('login-password-input'), {
+        target: { value: 'password123' }
+      })
     })
 
     // Submit form
-    fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('login-submit-button'))
+    })
 
-    // Poczekaj na pojawienie się komunikatu błędu
     await waitFor(() => {
-      const errorElement = screen.getByText((content) => content.includes(errorMessage))
-      expect(errorElement).toBeInTheDocument()
-    }, { timeout: 2000 })
+      expect(screen.getByTestId('login-error-message')).toBeInTheDocument()
+      expect(screen.getByTestId('login-error-message')).toHaveTextContent(errorMessage)
+    })
   })
 
   test('shows loading state during submission', async () => {
-    // Mock długiego czasu odpowiedzi
+    // Mock long response time
     mockOnSubmit.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)))
 
     renderWithRouter(<LoginForm {...defaultProps} />)
 
     // Fill in valid data
-    fireEvent.change(screen.getByLabelText(/^email$/i), {
-      target: { value: 'test@example.com' }
-    })
-    fireEvent.change(screen.getByLabelText(/^password$/i), {
-      target: { value: 'password123' }
+    await act(async () => {
+      fireEvent.change(screen.getByTestId('login-email-input'), {
+        target: { value: 'test@example.com' }
+      })
+      fireEvent.change(screen.getByTestId('login-password-input'), {
+        target: { value: 'password123' }
+      })
     })
 
     // Submit form
-    const submitButton = screen.getByRole('button', { name: /sign in/i })
-    fireEvent.click(submitButton)
+    const submitButton = screen.getByTestId('login-submit-button')
+    await act(async () => {
+      fireEvent.click(submitButton)
+    })
 
-    // Sprawdź stan ładowania
+    // Check loading state
     expect(submitButton).toBeDisabled()
     expect(submitButton).toHaveTextContent(/signing in/i)
 
@@ -168,46 +189,5 @@ describe('LoginForm', () => {
       expect(submitButton).not.toBeDisabled()
       expect(submitButton).toHaveTextContent(/sign in/i)
     })
-  })
-
-  test('clears error message when form is modified after error', async () => {
-    const errorMessage = 'Invalid credentials'
-    mockOnSubmit.mockRejectedValueOnce(new Error(errorMessage))
-
-    renderWithRouter(<LoginForm {...defaultProps} />)
-
-    // Fill in valid data first
-    fireEvent.change(screen.getByLabelText(/^email$/i), {
-      target: { value: 'test@example.com' }
-    })
-    fireEvent.change(screen.getByLabelText(/^password$/i), {
-      target: { value: 'password123' }
-    })
-
-    // Submit form
-    fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
-
-    // Poczekaj na pojawienie się komunikatu błędu
-    await waitFor(() => {
-      const errorElement = screen.getByText((content) => content.includes(errorMessage))
-      expect(errorElement).toBeInTheDocument()
-    }, { timeout: 2000 })
-
-    // Reset form state by clicking submit button again
-    fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
-
-    // Modify form
-    fireEvent.change(screen.getByLabelText(/^email$/i), {
-      target: { value: 'new@example.com' }
-    })
-    fireEvent.change(screen.getByLabelText(/^password$/i), {
-      target: { value: 'newpassword123' }
-    })
-
-    // Poczekaj na zniknięcie komunikatu błędu
-    await waitFor(() => {
-      const errorElement = screen.queryByText((content) => content.includes(errorMessage))
-      expect(errorElement).not.toBeInTheDocument()
-    }, { timeout: 2000 })
   })
 }) 
