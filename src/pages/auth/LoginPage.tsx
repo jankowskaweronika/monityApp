@@ -30,9 +30,10 @@ export const LoginPage: React.FC = () => {
 
             if (authData.user) {
                 dispatch(setUser(authData.user));
-                navigate('/');
+                navigate('/dashboard');
             }
         } catch (err) {
+            console.error('Error logging in:', err);
             throw err;
         }
     };

@@ -1,107 +1,49 @@
 import React from 'react';
-import {
-    Chart as ChartJS,
-    ArcElement,
-    Tooltip,
-    Legend,
-    CategoryScale,
-    LinearScale
-} from 'chart.js';
-import { Doughnut } from 'react-chartjs-2';
-import { CategoryBreakdown } from '../../types/types';
+import { Card } from '../ui/card';
 
-// Rejestracja wszystkich potrzebnych komponentów
-ChartJS.register(
-    ArcElement,
-    Tooltip,
-    Legend,
-    CategoryScale,
-    LinearScale
-);
-
-interface ExpensesChartProps {
-    categoryBreakdown: CategoryBreakdown[];
+export interface ExpensesChartProps {
+    categoryBreakdown: Array<{
+        category: string;
+        amount: number;
+        percentage: number;
+    }>;
     totalAmount: number;
 }
 
-export const ExpensesChart: React.FC<ExpensesChartProps> = ({ categoryBreakdown, totalAmount }) => {
-    console.log('ExpensesChart props:', JSON.stringify({ categoryBreakdown, totalAmount }, null, 2));
-
-    const data = {
-        labels: categoryBreakdown.map(cat => cat.category_name),
-        datasets: [
-            {
-                data: categoryBreakdown.map(cat => cat.amount),
-                backgroundColor: categoryBreakdown.map(cat => cat.category_color),
-                borderColor: 'rgb(var(--background))',
-                borderWidth: 2,
-                hoverOffset: 8,
-                borderRadius: 4
-            },
-        ],
-    };
-
-    const options = {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: {
-            animateScale: true,
-            animateRotate: true
-        },
-        plugins: {
-            legend: {
-                position: 'right' as const,
-                labels: {
-                    usePointStyle: true,
-                    pointStyle: 'circle',
-                    padding: 20,
-                    font: {
-                        size: 12,
-                        family: 'inherit'
-                    },
-                    color: 'rgb(var(--foreground))'
-                }
-            },
-            tooltip: {
-                backgroundColor: 'rgb(var(--card))',
-                titleColor: 'rgb(var(--foreground))',
-                bodyColor: 'rgb(var(--foreground))',
-                bodyFont: {
-                    size: 12,
-                    family: 'inherit'
-                },
-                padding: 12,
-                boxPadding: 6,
-                borderColor: 'rgb(var(--border))',
-                borderWidth: 1,
-                callbacks: {
-                    label: (context: any) => {
-                        const value = context.raw;
-                        const percentage = ((value / totalAmount) * 100).toFixed(1);
-                        return `${context.label}: ${new Intl.NumberFormat('pl-PL', {
-                            style: 'currency',
-                            currency: 'PLN'
-                        }).format(value)} (${percentage}%)`;
-                    },
-                },
-            },
-        },
-        cutout: '75%',
-    };
-
+export const ExpensesChart: React.FC<ExpensesChartProps> = ({
+    categoryBreakdown,
+    totalAmount,
+}) => {
     return (
-        <div className="relative h-[300px] w-full">
-            {categoryBreakdown.length > 0 ? (
-                <>
-                    <div className="absolute inset-0">
-                        <Doughnut data={data} options={options} />
-                    </div>
-                </>
-            ) : (
-                <div className="flex items-center justify-center h-full text-muted-foreground">
-                    No data available
+        <Card title="Expenses by Category">
+            <div className="p-4">
+                <div className="space-y-4">
+                    {categoryBreakdown.map(({ category, amount, percentage }) => (
+                        <div key={category}>
+                            <div className="flex justify-between mb-1">
+                                <span className="text-sm font-medium">{category}</span>
+                                <span className="text-sm text-gray-500">
+                                    ${amount.toFixed(2)} ({percentage.toFixed(1)}%)
+                                </span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div
+                                    className="bg-indigo-600 h-2 rounded-full"
+                                    style={{ width: `${percentage}%` }}
+                                />
+                            </div>
+                        </div>
+                    ))}
                 </div>
-            )}
-        </div>
+                <div className="mt-4 pt-4 border-t">
+                    <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium">Total</span>
+                        <span className="text-lg font-bold">
+                            ${totalAmount.toFixed(2)}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </Card>
     );
 };

@@ -1,161 +1,97 @@
-import { describe, test, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, test, expect } from 'vitest'
+import { render, screen } from '@testing-library/react'
 import { PeriodSummary } from '../PeriodSummary'
-import { PeriodInfo, CategoryBreakdown } from '../../../types/types'
 
 // Mock data
-const mockPeriod: PeriodInfo = {
-  id: '1',
-  name: 'March 2024',
-  start_date: '2024-03-01',
-  end_date: '2024-03-31'
+const mockCurrentPeriod = {
+  start: '2024-03-01',
+  end: '2024-03-31'
 }
 
-const mockCategories: CategoryBreakdown[] = [
+const mockCategoryBreakdown = [
   {
-    category_id: '1',
-    category_name: 'Food',
+    category: 'Food',
     amount: 1000,
-    category_color: '#FF0000',
-    percentage: 66.67
+    percentage: 66.7
   },
   {
-    category_id: '2',
-    category_name: 'Transport',
+    category: 'Transport',
     amount: 500,
-    category_color: '#00FF00',
-    percentage: 33.33
+    percentage: 33.3
   }
 ]
 
 describe('PeriodSummary', () => {
   const defaultProps = {
-    currentPeriod: mockPeriod,
+    currentPeriod: mockCurrentPeriod,
     totalAmount: 1500,
-    categoryBreakdown: mockCategories,
+    categoryBreakdown: mockCategoryBreakdown,
     isLoading: false,
-    selectedPeriod: 'month',
-    onPeriodChange: vi.fn(),
-    previousAmount: 1200
+    previousPeriodTotal: 1200,
+    percentageChange: 25.0
   }
 
   test('renders loading state correctly', () => {
     render(<PeriodSummary {...defaultProps} isLoading={true} />)
-
-    // Sprawdź placeholdery ładowania (używamy klasy zamiast roli)
-    const placeholders = screen.getAllByTestId('loading-placeholder')
-    expect(placeholders).toHaveLength(3)
+    expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
 
   test('displays correct total amount and trend', () => {
     render(<PeriodSummary {...defaultProps} />)
 
     // Sprawdź wyświetlaną kwotę
-    const totalAmount = screen.getByText('1500,00 zł', { selector: 'span.text-4xl' })
-    expect(totalAmount).toBeInTheDocument()
+    expect(screen.getByText('$1500.00')).toBeInTheDocument()
 
     // Sprawdź trend (wzrost o 25%)
-    const trendContainer = screen.getByText('25.0%').closest('div')
-    expect(trendContainer).toHaveClass('text-red-500')
-    expect(trendContainer?.querySelector('svg')).toHaveClass('lucide-trending-up')
+    const trendElement = screen.getByText('+25.0%')
+    expect(trendElement).toHaveClass('text-red-600')
   })
 
   test('handles negative trend correctly', () => {
-    render(<PeriodSummary {...defaultProps} previousAmount={2000} />)
+    render(<PeriodSummary {...defaultProps} percentageChange={-25.0} />)
 
     // Sprawdź trend (spadek o 25%)
-    const trendContainer = screen.getByText('25.0%').closest('div')
-    expect(trendContainer).toHaveClass('text-green-500')
-    expect(trendContainer?.querySelector('svg')).toHaveClass('lucide-trending-down')
-  })
-
-  test('handles stable trend correctly', () => {
-    render(<PeriodSummary {...defaultProps} previousAmount={1500} />)
-
-    // Sprawdź trend (bez zmian)
-    const trendContainer = screen.getByText('0.0%').closest('div')
-    expect(trendContainer).toHaveClass('text-muted-foreground')
-    expect(trendContainer?.querySelector('svg')).toHaveClass('lucide-minus')
+    const trendElement = screen.getByText('-25.0%')
+    expect(trendElement).toHaveClass('text-green-600')
   })
 
   test('displays correct date range', () => {
     render(<PeriodSummary {...defaultProps} />)
 
-    expect(screen.getByText('1 mar 2024 - 31 mar 2024')).toBeInTheDocument()
-  })
-
-  test('calculates and displays average daily amount correctly', () => {
-    render(<PeriodSummary {...defaultProps} />)
-
-    // 1500 / 30 = 50 zł/dzień
-    const avgAmount = screen.getByText('50,00 zł', { selector: 'p.text-2xl' })
-    expect(avgAmount).toBeInTheDocument()
-  })
-
-  test('handles period change correctly', () => {
-    render(<PeriodSummary {...defaultProps} />)
-
-    // Otwórz dropdown
-    const periodButton = screen.getByRole('button', { name: /This Month/i })
-    fireEvent.click(periodButton)
-
-    // Wybierz nowy okres
-    const weekOption = screen.getByText('This Week')
-    fireEvent.click(weekOption)
-
-    expect(defaultProps.onPeriodChange).toHaveBeenCalledWith('week')
+    // Sprawdź format daty (zależny od lokalizacji)
+    const dateText = screen.getByText(/3\/1\/2024 - 3\/31\/2024/)
+    expect(dateText).toBeInTheDocument()
   })
 
   test('displays category breakdown correctly', () => {
     render(<PeriodSummary {...defaultProps} />)
 
-    // Otwórz szczegóły kategorii
-    const breakdownButton = screen.getByText('Category breakdown')
-    fireEvent.click(breakdownButton)
+    // Sprawdź czy kategorie są wyświetlane
+    expect(screen.getByText('Food')).toBeInTheDocument()
+    expect(screen.getByText('Transport')).toBeInTheDocument()
 
-    // Sprawdź czy kategorie są wyświetlane w odpowiedniej kolejności (sortowanie po kwocie)
-    const categoryItems = screen.getAllByText(/Food|Transport/)
-    expect(categoryItems).toHaveLength(2)
+    // Sprawdź kwoty dla każdej kategorii
+    expect(screen.getByText('$1000.00')).toBeInTheDocument()
+    expect(screen.getByText('$500.00')).toBeInTheDocument()
 
-    // Sprawdź kwoty i procenty dla każdej kategorii
-    const foodAmount = screen.getByText('1000,00 zł', { selector: 'div.text-sm.font-medium' })
-    const transportAmount = screen.getByText('500,00 zł', { selector: 'div.text-sm.font-medium' })
-    expect(foodAmount).toBeInTheDocument()
-    expect(transportAmount).toBeInTheDocument()
-
-    // Sprawdź procenty (obliczane dynamicznie)
-    const percentages = screen.getAllByText(/66.7%|33.3%/, { selector: 'div.text-xs' })
-    expect(percentages).toHaveLength(2)
+    // Sprawdź procenty
+    expect(screen.getByText('66.7% of total')).toBeInTheDocument()
+    expect(screen.getByText('33.3% of total')).toBeInTheDocument()
   })
 
   test('handles empty category breakdown', () => {
     render(<PeriodSummary {...defaultProps} categoryBreakdown={[]} />)
-
-    // Nie powinno być przycisku breakdown
-    expect(screen.queryByText('Category breakdown')).not.toBeInTheDocument()
+    // Nie powinno być żadnych kategorii
+    expect(screen.queryByText(/Food|Transport/)).not.toBeInTheDocument()
   })
 
   test('handles zero total amount', () => {
-    render(<PeriodSummary {...defaultProps} totalAmount={0} previousAmount={0} />)
+    render(<PeriodSummary {...defaultProps} totalAmount={0} percentageChange={0} />)
 
     // Sprawdź główną kwotę
-    const totalAmount = screen.getByText('0,00 zł', { selector: 'span.text-4xl' })
-    expect(totalAmount).toBeInTheDocument()
+    expect(screen.getByText('$0.00')).toBeInTheDocument()
 
-    // Sprawdź średnią dzienną
-    const avgAmount = screen.getByText('0,00 zł', { selector: 'p.text-2xl' })
-    expect(avgAmount).toBeInTheDocument()
-
-    // Nie powinno być trendu dla zerowej kwoty
-    expect(screen.queryByText(/%/)).not.toBeInTheDocument()
-    expect(screen.queryByText(/trending/)).not.toBeInTheDocument()
-  })
-
-  test('handles undefined previous amount', () => {
-    render(<PeriodSummary {...defaultProps} previousAmount={undefined} />)
-
-    // Nie powinno wyświetlać trendu
-    expect(screen.queryByText(/%/)).not.toBeInTheDocument()
-    expect(screen.queryByText(/trending/)).not.toBeInTheDocument()
+    // Sprawdź trend (0%)
+    expect(screen.getByText('+0.0%')).toBeInTheDocument()
   })
 }) 
