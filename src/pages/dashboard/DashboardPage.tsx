@@ -92,9 +92,16 @@ export const DashboardPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div data-test-id="period-summary-card">
           <PeriodSummary
-            currentPeriod={mockData.currentPeriod}
+            currentPeriod={{
+              start: mockData.currentPeriod.start,
+              end: mockData.currentPeriod.end
+            }}
             totalAmount={mockData.totalAmount}
-            categoryBreakdown={mockData.categoryBreakdown}
+            categoryBreakdown={mockData.categoryBreakdown.map(item => ({
+              category: item.category,
+              amount: item.amount,
+              percentage: item.percentage
+            }))}
             isLoading={isLoading}
             previousPeriodTotal={mockData.previousPeriodTotal}
             percentageChange={mockData.percentageChange}

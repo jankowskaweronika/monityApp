@@ -19,11 +19,11 @@ export interface PeriodSummaryProps {
 
 export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
   currentPeriod,
-  totalAmount,
-  categoryBreakdown,
+  totalAmount = 0,
+  categoryBreakdown = [],
   isLoading,
-  previousPeriodTotal,
-  percentageChange,
+  previousPeriodTotal = 0,
+  percentageChange = 0,
 }) => {
   if (isLoading) {
     return (
@@ -33,43 +33,47 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
     );
   }
 
+  // Zabezpieczenie przed nieprawidłowymi datami
+  const startDate = currentPeriod?.start ? new Date(currentPeriod.start) : new Date();
+  const endDate = currentPeriod?.end ? new Date(currentPeriod.end) : new Date();
+
   return (
     <Card title="Period Summary">
       <div className="p-4">
         <div className="mb-4">
           <div className="text-sm text-gray-500">
-            {new Date(currentPeriod.start).toLocaleDateString()} -{' '}
-            {new Date(currentPeriod.end).toLocaleDateString()}
+            {startDate.toLocaleDateString()} -{' '}
+            {endDate.toLocaleDateString()}
           </div>
           <div className="text-2xl font-bold mt-1">
-            ${totalAmount.toFixed(2)}
+            ${(totalAmount || 0).toFixed(2)}
           </div>
           <div className="text-sm mt-1">
             <span
               className={
-                percentageChange >= 0
+                (percentageChange || 0) >= 0
                   ? 'text-red-600'
                   : 'text-green-600'
               }
             >
-              {percentageChange >= 0 ? '+' : ''}
-              {percentageChange.toFixed(1)}%
+              {(percentageChange || 0) >= 0 ? '+' : ''}
+              {(percentageChange || 0).toFixed(1)}%
             </span>{' '}
             vs previous period
           </div>
         </div>
 
         <div className="space-y-3">
-          {categoryBreakdown.map(({ category, amount, percentage }) => (
+          {(categoryBreakdown || []).map(({ category, amount = 0, percentage = 0 }) => (
             <div key={category} className="flex justify-between items-center">
               <div>
                 <div className="font-medium">{category}</div>
                 <div className="text-sm text-gray-500">
-                  {percentage.toFixed(1)}% of total
+                  {(percentage || 0).toFixed(1)}% of total
                 </div>
               </div>
               <div className="font-medium">
-                ${amount.toFixed(2)}
+                ${(amount || 0).toFixed(2)}
               </div>
             </div>
           ))}
