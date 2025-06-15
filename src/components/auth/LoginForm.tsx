@@ -13,10 +13,21 @@ interface LoginFormProps {
 export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
     const { form, formErrors, isSubmitting, handleSubmit } = useLoginForm();
 
+    const handleFormSubmit = async (data: LoginFormData) => {
+        try {
+            await onSubmit(data);
+        } catch (error) {
+            form.setError('root', {
+                type: 'manual',
+                message: error instanceof Error ? error.message : 'An error occurred during login'
+            });
+        }
+    };
+
     return (
         <BaseForm
             form={form}
-            onSubmit={onSubmit}
+            onSubmit={handleFormSubmit}
             className="space-y-4"
         >
             <FormInput

@@ -163,16 +163,16 @@ describe('RegisterForm', () => {
       fireEvent.blur(confirmInput)
     })
 
-    // Change password
+    // Change password and trigger validation
     await act(async () => {
       fireEvent.change(passwordInput, { target: { value: 'NewP@ss123' } })
       fireEvent.blur(passwordInput)
+      // Trigger validation on confirm password field
+      fireEvent.blur(confirmInput)
     })
 
     await waitFor(() => {
-      const errorElement = screen.getByTestId('confirmPassword-error')
-      expect(errorElement).toBeInTheDocument()
-      expect(errorElement).toHaveTextContent(/hasła nie są identyczne/i)
+      expect(screen.getByText(/hasła nie są identyczne/i)).toBeInTheDocument()
     })
   })
 

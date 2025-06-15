@@ -14,19 +14,10 @@ export function BaseForm<T extends Record<string, any>>({
   children,
   className
 }: BaseFormProps<T>) {
-  const handleSubmit = async (data: T) => {
-    try {
-      await onSubmit(data);
-    } catch (error) {
-      // Error handling can be added here if needed
-      console.error('Form submission error:', error);
-    }
-  };
-
   return (
     <FormProvider {...form}>
       <form
-        onSubmit={form.handleSubmit(handleSubmit)}
+        onSubmit={form.handleSubmit(onSubmit)}
         className={className}
         noValidate
       >
