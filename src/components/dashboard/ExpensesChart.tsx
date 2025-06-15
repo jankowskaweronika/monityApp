@@ -53,7 +53,7 @@ export const ExpensesChart: React.FC<ExpensesChartProps> = ({
                                 dataKey="value"
                                 label={({ name, percentage }) => `${name} (${percentage.toFixed(1)}%)`}
                             >
-                                {data.map((entry, index) => (
+                                {data.map((_, index) => (
                                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                 ))}
                             </Pie>
