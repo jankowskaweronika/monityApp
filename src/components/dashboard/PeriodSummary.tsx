@@ -42,7 +42,7 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
             {endDate.toLocaleDateString()}
           </div>
           <div className="text-2xl font-bold mt-1">
-            ${(totalAmount || 0).toFixed(2)}
+            {`${(totalAmount || 0).toFixed(2)} zł`}
           </div>
           <div className="text-sm mt-1">
             <span
@@ -69,7 +69,7 @@ export const PeriodSummary: React.FC<PeriodSummaryProps> = ({
                 </div>
               </div>
               <div className="font-medium">
-                ${(amount || 0).toFixed(2)}
+                {`${(amount || 0).toFixed(2)} zł`}
               </div>
             </div>
           ))}

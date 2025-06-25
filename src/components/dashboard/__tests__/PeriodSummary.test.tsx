@@ -38,7 +38,7 @@ describe('PeriodSummary', () => {
 
   test('displays total amount correctly', () => {
     render(<PeriodSummary {...defaultProps} />)
-    expect(screen.getByText('$1500.00')).toBeInTheDocument()
+    expect(screen.getByText('1500.00 zł')).toBeInTheDocument()
   })
 
   test('displays percentage change correctly', () => {
@@ -54,8 +54,8 @@ describe('PeriodSummary', () => {
     expect(screen.getByText('Transport')).toBeInTheDocument()
 
     // Sprawdź kwoty dla każdej kategorii
-    expect(screen.getByText('$1000.00')).toBeInTheDocument()
-    expect(screen.getByText('$500.00')).toBeInTheDocument()
+    expect(screen.getByText('1000.00 zł')).toBeInTheDocument()
+    expect(screen.getByText('500.00 zł')).toBeInTheDocument()
 
     // Sprawdź procenty
     expect(screen.getByText('66.7% of total')).toBeInTheDocument()
@@ -72,7 +72,7 @@ describe('PeriodSummary', () => {
     render(<PeriodSummary {...defaultProps} totalAmount={0} percentageChange={0} />)
 
     // Sprawdź główną kwotę
-    expect(screen.getByText('$0.00')).toBeInTheDocument()
+    expect(screen.getByText('0.00 zł')).toBeInTheDocument()
 
     // Sprawdź trend (0%)
     expect(screen.getByText('+0.0%')).toBeInTheDocument()

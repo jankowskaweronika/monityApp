@@ -28,7 +28,7 @@ export const ExpensesChart: React.FC<ExpensesChartProps> = ({
             return (
                 <div className="bg-white p-2 border rounded shadow-lg">
                     <p className="font-medium">{data.name}</p>
-                    <p className="text-sm">${data.value.toFixed(2)}</p>
+                    <p className="text-sm">{`${data.value.toFixed(2)} zł`}</p>
                     <p className="text-sm text-gray-500">{data.percentage.toFixed(1)}%</p>
                 </div>
             );
@@ -64,7 +64,7 @@ export const ExpensesChart: React.FC<ExpensesChartProps> = ({
                 <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">Total</span>
                     <span className="text-lg font-bold">
-                        ${totalAmount.toFixed(2)}
+                        {`${totalAmount.toFixed(2)} zł`}
                     </span>
                 </div>
             </div>
