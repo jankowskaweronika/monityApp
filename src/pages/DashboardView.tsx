@@ -107,18 +107,14 @@ export const DashboardView: React.FC = () => {
             <Card className="shadow-md flex flex-col justify-center" data-test-id="expenses-chart-card">
               <CardContent className="p-8 flex flex-col items-center">
                 <h2 className="text-2xl font-semibold mb-6 text-center">Expenses Distribution</h2>
-                <div className="relative h-[300px] w-full">
-                  <ExpensesChart
-                    categoryBreakdown={dashboardData.summary.category_breakdown.map(item => ({
-                      category: item.category_name,
-                      amount: item.amount,
-                      percentage: item.percentage
-                    }))}
-                    totalAmount={dashboardData.summary.total_amount}
-                  />
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center">
-                  </div>
-                </div>
+                <ExpensesChart
+                  categoryBreakdown={dashboardData.summary.category_breakdown.map(item => ({
+                    category: item.category_name,
+                    amount: item.amount,
+                    percentage: item.percentage
+                  }))}
+                  totalAmount={dashboardData.summary.total_amount}
+                />
               </CardContent>
             </Card>
           </div>

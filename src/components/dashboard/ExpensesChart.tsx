@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card } from '../ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 
 export interface ExpensesChartProps {
@@ -23,7 +22,7 @@ export const ExpensesChart: React.FC<ExpensesChartProps> = ({
         percentage: item.percentage
     }));
 
-    const CustomTooltip = ({ active, payload }: any) => {
+    const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { name: string; value: number; percentage: number } }> }) => {
         if (active && payload && payload.length) {
             const data = payload[0].payload;
             return (
@@ -38,39 +37,37 @@ export const ExpensesChart: React.FC<ExpensesChartProps> = ({
     };
 
     return (
-        <Card title="Expenses by Category">
-            <div className="p-4">
-                <div className="h-[300px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                            <Pie
-                                data={data}
-                                cx="50%"
-                                cy="50%"
-                                labelLine={false}
-                                outerRadius={100}
-                                fill="#8884d8"
-                                dataKey="value"
-                                label={({ name, percentage }) => `${name} (${percentage.toFixed(1)}%)`}
-                            >
-                                {data.map((_, index) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                ))}
-                            </Pie>
-                            <Tooltip content={<CustomTooltip />} />
-                            <Legend />
-                        </PieChart>
-                    </ResponsiveContainer>
-                </div>
-                <div className="mt-4 pt-4 border-t">
-                    <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">Total</span>
-                        <span className="text-lg font-bold">
-                            ${totalAmount.toFixed(2)}
-                        </span>
-                    </div>
+        <div className="p-0 w-full max-w-xs md:max-w-[350px] mx-auto">
+            <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                        <Pie
+                            data={data}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            outerRadius={100}
+                            fill="#8884d8"
+                            dataKey="value"
+                            label={({ name, percentage }) => `${name} (${percentage.toFixed(1)}%)`}
+                        >
+                            {data.map((_, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                        </Pie>
+                        <Tooltip content={<CustomTooltip />} />
+                        <Legend />
+                    </PieChart>
+                </ResponsiveContainer>
+            </div>
+            <div className="mt-4 pt-4 border-t">
+                <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium">Total</span>
+                    <span className="text-lg font-bold">
+                        ${totalAmount.toFixed(2)}
+                    </span>
                 </div>
             </div>
-        </Card>
+        </div>
     );
 };
