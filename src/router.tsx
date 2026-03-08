@@ -1,3 +1,4 @@
+import React from 'react';
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
 import { DashboardView } from './pages/DashboardView';
 import { LoginPage } from './pages/auth/LoginPage';

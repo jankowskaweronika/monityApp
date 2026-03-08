@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import React, { createContext, useContext } from 'react';
 import { supabase } from '../db/supabase.client';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '../db/database.types';

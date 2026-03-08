@@ -1,14 +1,14 @@
 import React from 'react';
 import { FormProvider, UseFormReturn } from 'react-hook-form';
 
-interface BaseFormProps<T extends Record<string, any>> {
+interface BaseFormProps<T extends Record<string, unknown>> {
   form: UseFormReturn<T>;
   onSubmit: (data: T) => Promise<void>;
   children: React.ReactNode;
   className?: string;
 }
 
-export function BaseForm<T extends Record<string, any>>({
+export function BaseForm<T extends Record<string, unknown>>({
   form,
   onSubmit,
   children,

@@ -9,17 +9,13 @@ export const PasswordResetPage: React.FC = () => {
     const dispatch = useAppDispatch();
 
     const handlePasswordReset = async (email: string) => {
-        try {
-            const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: `${window.location.origin}/auth/reset-confirmation`,
-            });
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/auth/reset-confirmation`,
+        });
 
-            if (error) {
-                dispatch(setError(error.message));
-                throw error;
-            }
-        } catch (err) {
-            throw err;
+        if (error) {
+            dispatch(setError(error.message));
+            throw error;
         }
     };
 

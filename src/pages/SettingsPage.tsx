@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useAppSelector } from '../store/hooks';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -41,8 +41,8 @@ export const SettingsPage = () => {
       if (error) throw error;
 
       setMessage({ type: 'success', text: 'Profile updated successfully!' });
-    } catch (error: any) {
-      setMessage({ type: 'error', text: error.message });
+    } catch (error: unknown) {
+      setMessage({ type: 'error', text: error instanceof Error ? error.message : 'An error occurred' });
     } finally {
       setLoading(false);
     }
@@ -68,8 +68,8 @@ export const SettingsPage = () => {
 
       setMessage({ type: 'success', text: 'Password updated successfully!' });
       setFormData(prev => ({ ...prev, currentPassword: '', newPassword: '', confirmPassword: '' }));
-    } catch (error: any) {
-      setMessage({ type: 'error', text: error.message });
+    } catch (error: unknown) {
+      setMessage({ type: 'error', text: error instanceof Error ? error.message : 'An error occurred' });
     } finally {
       setLoading(false);
     }

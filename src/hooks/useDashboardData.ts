@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { DashboardData, LoadingState, DashboardError } from '../types/dashboardTypes';
 import { CreateExpenseCommand, ExpenseSummaryResponse, ListExpensesResponse, ListCategoriesResponse } from '../types/types';
 import { ExpenseService } from '../api/services/expense.service';
@@ -37,7 +37,7 @@ export const useDashboardData = (): UseDashboardDataReturn => {
     addingExpense: false,
   });
 
-  const emptyDashboardData: DashboardData = {
+  const emptyDashboardData: DashboardData = useMemo(() => ({
     summary: {
       total_amount: 0,
       category_breakdown: [],
@@ -58,7 +58,7 @@ export const useDashboardData = (): UseDashboardDataReturn => {
     },
     isLoading: false,
     error: undefined,
-  };
+  }), [selectedPeriod]);
 
   const [dashboardData, setDashboardData] = useState<DashboardData>(emptyDashboardData);
 
@@ -89,7 +89,7 @@ export const useDashboardData = (): UseDashboardDataReturn => {
     } finally {
       setLoadingState(prev => ({ ...prev, summary: false }));
     }
-  }, [selectedPeriod, isAuthenticated]);
+  }, [selectedPeriod, isAuthenticated, emptyDashboardData]);
 
   // Fetch recent expenses
   const fetchRecentExpenses = useCallback(async () => {
@@ -162,7 +162,7 @@ export const useDashboardData = (): UseDashboardDataReturn => {
       fetchRecentExpenses(),
       fetchCategories(),
     ]);
-  }, [fetchSummaryData, fetchRecentExpenses, fetchCategories, isAuthenticated]);
+  }, [fetchSummaryData, fetchRecentExpenses, fetchCategories, isAuthenticated, emptyDashboardData]);
 
   // Change period handler
   const changePeriod = useCallback((period: string) => {
@@ -236,12 +236,12 @@ export const useDashboardData = (): UseDashboardDataReturn => {
   // Initial data load and auth state change
   useEffect(() => {
     void refreshData();
-  }, [isAuthenticated]);
+  }, [refreshData]);
 
   // Reload summary when period changes
   useEffect(() => {
     void fetchSummaryData();
-  }, [selectedPeriod, isAuthenticated]);
+  }, [fetchSummaryData]);
 
   // Update isLoading flag based on loading states
   const isLoading = loadingState.summary || loadingState.expenses || loadingState.categories;

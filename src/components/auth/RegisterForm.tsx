@@ -16,8 +16,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
 
     const handleFormSubmit = async (data: RegisterFormData) => {
         try {
-            const { confirmPassword, ...submitData } = data;
-            await onSubmit(submitData);
+            const { fullName, email, password } = data;
+            await onSubmit({ fullName, email, password });
         } catch (error) {
             form.setError('root', {
                 type: 'manual',

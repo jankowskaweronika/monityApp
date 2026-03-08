@@ -48,7 +48,7 @@ export const Navbar: React.FC = () => {
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">{user?.email}</p>
                       <p className="text-xs leading-none text-muted-foreground">
-                        {('name' in (user || {})) ? (user as any).name : 'User'}
+                        {user?.user_metadata?.full_name as string || 'User'}
                       </p>
                     </div>
                   </DropdownMenuLabel>
